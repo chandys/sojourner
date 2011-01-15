@@ -3,8 +3,8 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" android:layout_gravity="center_horizontal" android:gravity="center_vertical|center_horizontal">
-<TextView android:layout_height="wrap_content" android:id="@+id/TextView01" android:layout_width="fill_parent" android:text="@string/hello" android:textStyle="bold" android:gravity="center|center_vertical"></TextView><ImageView android:id="@+id/ImageView01" android:layout_height="wrap_content" android:layout_width="wrap_content" android:scaleType="center" android:src="@drawable/hiker2"></ImageView>
-<Button android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="New Track"></Button>
-<Button android:id="@+id/Button02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="History"></Button>
-<Button android:id="@+id/Button03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Current Location"></Button>
+<TextView android:layout_height="wrap_content" android:id="@+id/TextView01" android:layout_width="fill_parent" android:text="@string/hello" android:textStyle="bold" android:gravity="center|center_vertical" android:layout_marginBottom="20dip" android:textSize="24dip"></TextView><ImageView android:id="@+id/ImageView01" android:layout_height="wrap_content" android:layout_width="wrap_content" android:scaleType="center" android:src="@drawable/hiker2" android:paddingBottom="50dip"></ImageView>
+<Button android:id="@+id/Button01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="New Track" android:width="150dip"></Button>
+<Button android:id="@+id/Button02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="History" android:width="150dip"></Button>
+<Button android:id="@+id/Button03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Current Location" android:width="150dip"></Button>
 </LinearLayout>
