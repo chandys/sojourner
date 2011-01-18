@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -98,6 +99,9 @@ public class Main extends Activity {
      */
     OnClickListener mNewTrackListener = new OnClickListener() {
         public void onClick(View v) {
+        	Intent i = new Intent();
+        	i.setClass(getApplicationContext(), com.saviorsoft.CompassMap.class);
+        	startActivity(i);
             //finish();
         }
     };
