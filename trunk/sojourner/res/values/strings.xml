@@ -4,4 +4,6 @@
     <string name="app_name">sojourner</string>
     <string name="back">Back</string>
     <string name="clear">Clear</string>
+    <string name="no_notes">No Notes Yet</string>
+    <string name="menu_insert">Add Item</string>
 </resources>

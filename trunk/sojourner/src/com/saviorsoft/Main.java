@@ -5,9 +5,6 @@ package com.saviorsoft;
 import com.saviorsoft.R;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -111,7 +108,9 @@ public class Main extends Activity {
      */
     OnClickListener mHistoryListener = new OnClickListener() {
         public void onClick(View v) {
-            //finish();
+        	Intent i = new Intent();
+        	i.setClass(getApplicationContext(), com.saviorsoft.HistoryList.class);
+        	startActivity(i);
         }
     };
 
