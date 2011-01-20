@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Sojourner</string>
-    <string name="app_name">sojourner</string>
+    <string name="app_name">Sojourner</string>
     <string name="back">Back</string>
     <string name="clear">Clear</string>
     <string name="no_notes">No Notes Yet</string>
