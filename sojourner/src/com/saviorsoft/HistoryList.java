@@ -1,18 +1,23 @@
 package com.saviorsoft;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class HistoryList extends ListActivity {
 
 	private static final int INSERT_ID = Menu.FIRST;
-	private int mNoteNumber = 1;
+	private long mNoteNumber = 1;
 	private HistoryDbAdapter mDbHelper;
 	
 	@Override
@@ -22,9 +27,47 @@ public class HistoryList extends ListActivity {
         
         mDbHelper = new HistoryDbAdapter(this);
         mDbHelper.open();
+        
+        ListView lv = getListView();
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+        	
+            @Override 
+            public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) { 
+            	onLongListItemClick(v,pos,id);
+            	return true; 
+           }
+            }); 
+
+
+        
         fillData();
 	}
 
+	
+	//You then create your handler method: 
+	protected void onLongListItemClick(View v, int pos, long id) { 
+	  Log.i( "Sojouner", "onLongListItemClick id=" + id ); 
+	  mNoteNumber = id;
+	  
+	  final CharSequence[] items = {"Show Track", "Send Track", "Delete Track"};
+
+	  AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	  builder.setTitle("Pick Action");
+	  builder.setItems(items, new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int item) {
+		        Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
+		        if(items[item] == "Delete Track"){
+		        	mDbHelper.deleteNote(mNoteNumber);
+		        	fillData();
+		        }
+		    }
+		});
+	  AlertDialog alert = builder.create();
+	  alert.show();
+	} 
+
+	
+	
 	private void fillData() {
         // Get all of the notes from the database and create the item list
         Cursor c = mDbHelper.fetchAllNotes();
@@ -71,6 +114,9 @@ public class HistoryList extends ListActivity {
 	@Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+          Toast msg = Toast.makeText(this, "Got Click", Toast.LENGTH_SHORT);
+          //msg.setGravity(Gravity.CENTER, msg.getXOffset() / 2, msg.getYOffset() / 2);
+          msg.show();
 //        Cursor c = mNotesCursor;
 //        c.moveToPosition(position);
 //        Intent i = new Intent(this, NoteEdit.class);
@@ -82,4 +128,8 @@ public class HistoryList extends ListActivity {
 //        startActivityForResult(i, ACTIVITY_EDIT);
     }
 	
+
+	
+	
+
 }
