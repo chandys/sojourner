@@ -2,8 +2,9 @@
 <resources>
     <string name="hello">Sojourner</string>
     <string name="app_name">Sojourner</string>
-    <string name="back">Back</string>
-    <string name="clear">Clear</string>
+    <string name="compass">Compass</string>
+    <string name="settings">Settings</string>
+    <string name="exit">Exit</string>
     <string name="no_notes">No Notes Yet</string>
     <string name="menu_insert">Add Item</string>
 </resources>
