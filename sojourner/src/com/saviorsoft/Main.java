@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,9 +16,11 @@ import android.widget.Button;
 
 public class Main extends Activity {
 	
-    static final private int BACK_ID = Menu.FIRST;
-    static final private int CLEAR_ID = Menu.FIRST + 1;
-	
+    static final private int COMPASS_ID = Menu.FIRST;
+    static final private int SETTINGS_ID = Menu.FIRST + 1;
+    static final private int EXIT_ID = Menu.FIRST + 2;
+
+    
     public Main(){    	
     }
 	
@@ -50,11 +53,8 @@ public class Main extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        // We are going to create two menus. Note that we assign them
-        // unique integer IDs, labels from our string resources, and
-        // given them shortcuts.
-        menu.add(0, BACK_ID, 0, R.string.back).setShortcut('0', 'b');
-        menu.add(0, CLEAR_ID, 0, R.string.clear).setShortcut('1', 'c');
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.mainmenu, menu);
 
         return true;
     }
@@ -80,11 +80,14 @@ public class Main extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case BACK_ID:
+        case R.id.itemcompass:
             //finish();
             return true;
-        case CLEAR_ID:
+        case R.id.itemsettings:
             //mEditor.setText("");
+        	return true;
+        case R.id.itemexit:
+            finish();
             return true;
         }
 
