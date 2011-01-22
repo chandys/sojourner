@@ -81,7 +81,9 @@ public class Main extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.itemcompass:
-            //finish();
+        	Intent i = new Intent();
+        	i.setClass(getApplicationContext(), com.saviorsoft.Compass.class);
+        	startActivity(i);
             return true;
         case R.id.itemsettings:
             //mEditor.setText("");
