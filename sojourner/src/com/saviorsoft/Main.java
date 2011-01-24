@@ -2,7 +2,6 @@ package com.saviorsoft;
 
 //import com.example.android.skeletonapp.R;
 
-import com.saviorsoft.R;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -116,6 +115,7 @@ public class Main extends Activity {
         	Intent i = new Intent();
         	i.setClass(getApplicationContext(), com.saviorsoft.HistoryList.class);
         	startActivity(i);
+        	//setContentView(R.layout.lunar_layoutcompassview);
         }
     };
 
@@ -124,7 +124,10 @@ public class Main extends Activity {
      */
     OnClickListener mCurrentLocationListener = new OnClickListener() {
         public void onClick(View v) {
-          
+        	//Intent i = new Intent();
+        	//i.setClass(getApplicationContext(), com.saviorsoft.CompassView.class);
+        	//startActivity(i);
+        	setContentView(R.layout.lunar_layout);
         }
     };
 
