@@ -4,14 +4,18 @@ package com.saviorsoft;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class Main extends Activity {
 	
@@ -85,7 +89,10 @@ public class Main extends Activity {
         	startActivity(i);
             return true;
         case R.id.itemsettings:
-            //mEditor.setText("");
+        	Dialog dialog = new Dialog(this);
+        	dialog.setContentView(R.layout.about);
+        	dialog.setTitle(Html.fromHtml("<big>Sojourner</big><sup><small>TM </small> </sup>  <small> by</small> <a href=\"http://code.google.com/p/sojourner\"><cite><big>Savior</big></cite><sub><small>Soft</small></sub></a>"));
+        	dialog.show();
         	return true;
         case R.id.itemexit:
             finish();
