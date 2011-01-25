@@ -19,6 +19,8 @@ public class Compass extends Activity implements SensorEventListener {
    private float myAzimuth = 0;
    private float myPitch = 0;
    private float myRoll = 0;
+   private Rose rose;
+   private int rotate = 0;
 
    
     @Override
@@ -31,9 +33,7 @@ public class Compass extends Activity implements SensorEventListener {
         txtRawData.setText("Compass");
         txtDirection.setText("");
         
-        //rose = new Rose(this);
-        //(ImageView) findViewById(R.id.rose).setc;
-        
+        rose = (Rose) findViewById(R.id.rose);
         
         // Real sensor manager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -62,7 +62,6 @@ public class Compass extends Activity implements SensorEventListener {
    }
 
    public void onSensorChanged(SensorEvent event) {
-      // TODO Auto-generated method stub
 
            myAzimuth = Math.round(event.values[0]);
            myPitch = Math.round(event.values[1]);
@@ -71,6 +70,8 @@ public class Compass extends Activity implements SensorEventListener {
            String out = String.format("Azimuth: %.2f\n\nPitch:%.2f\n\nRoll:%.2f\n\n", 
                  myAzimuth, myPitch, myRoll);
            txtRawData.setText(out);
+           
+           //rose.setDirection(rotate++);
            
            printDirection();
    }

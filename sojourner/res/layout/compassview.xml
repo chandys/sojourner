@@ -15,12 +15,12 @@
    android:text="@string/hello" android:textSize="14sp"
  
    android:layout_margin="15dp" android:layout_height="wrap_content"/>
-
-<ImageView android:id="@+id/rose" 
+<com.saviorsoft.Rose android:id="@+id/rose" 
 android:layout_width="wrap_content" 
 android:layout_height="wrap_content" 
 android:src="@drawable/compass_rose" 
 android:layout_marginTop="10sp" 
 android:layout_gravity="center">
-</ImageView>
+</com.saviorsoft.Rose>
+
 </LinearLayout>
