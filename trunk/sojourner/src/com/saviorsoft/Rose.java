@@ -44,8 +44,25 @@ public class Rose extends ImageView {
   public void onDraw(Canvas canvas) {
     int height = this.getHeight();
     int width = this.getWidth();
+    
+    float cx = width/2;
+    float cy = height/2;
+    int compangle = 350;
+    int rad = 90;
 
-    canvas.rotate(direction, width / 2, height / 2);
+    Paint paint = new Paint();
+    paint.setAlpha(150);
+    paint.setColor(Color.GREEN);
+    canvas.drawCircle(cx, cy, rad, paint);
+    
+    float x2 = (float) (cx + (rad * Math.sin(Math.toRadians(compangle))));
+    float y2 = (float) (cy - (rad * Math.cos(Math.toRadians(compangle))));
+    Paint paint2 = new Paint();
+    paint2.setAlpha(150);
+    paint2.setColor(Color.MAGENTA);
+    canvas.drawCircle(x2, y2, 5, paint2);
+
+        
     super.onDraw(canvas);
   }
 

@@ -10,7 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-public class Compass extends Activity implements SensorEventListener {
+public class CompassActivity extends Activity implements SensorEventListener {
     /** Called when the activity is first created. */
    
    private SensorManager sensorManager;
@@ -19,21 +19,21 @@ public class Compass extends Activity implements SensorEventListener {
    private float myAzimuth = 0;
    private float myPitch = 0;
    private float myRoll = 0;
-   private Rose rose;
-   private int rotate = 0;
+   //private Rose rose;
+   //private int rotate = 0;
 
    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.compassview_old);
-        txtRawData = (TextView) findViewById(R.id.txt_info2);
-        txtDirection = (TextView) findViewById(R.id.txt_direction2);
+        setContentView(R.layout.compassview);
+        txtRawData = (TextView) findViewById(R.id.txt_info);
+        txtDirection = (TextView) findViewById(R.id.txt_direction);
         txtRawData.setText("Compass");
         txtDirection.setText("");
         
-        rose = (Rose) findViewById(R.id.rose2);
+        //rose = (Rose) findViewById(R.id.rose2);
         
         // Real sensor manager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
