@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -32,7 +33,40 @@ import android.widget.TextView;
  */
 class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     class CompassThread extends Thread {
-        /*
+        private float mCompassAngle = 0;
+        private float mWayPointAngle = -1;
+    	
+
+        
+
+		public void setmCompassAngle(float mCompassAngle) {
+			this.mCompassAngle = mCompassAngle;
+		}
+
+		public float getmCompassAngle() {
+			return mCompassAngle;
+		}
+        
+        public void setmWayPointAngle(float mWayPointAngle) {
+			this.mWayPointAngle = mWayPointAngle;
+		}
+
+		public float getmWayPointAngle() {
+			return mWayPointAngle;
+		}
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    	
+    	/*
          * Difficulty setting constants
          */
         public static final int DIFFICULTY_EASY = 0;
@@ -197,7 +231,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         /** Y of lander center. */
         private double mY;
 
-        public CompassThread(SurfaceHolder surfaceHolder, Context context,
+
+        
+        
+        
+
+		public CompassThread(SurfaceHolder surfaceHolder, Context context,
                 Handler handler) {
             // get handles to some important objects
             mSurfaceHolder = surfaceHolder;
@@ -206,44 +245,44 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 
             Resources res = context.getResources();
             // cache handles to our key sprites & other drawables
-            mLanderImage = context.getResources().getDrawable(
-                    R.drawable.lander_plain);
-            mFiringImage = context.getResources().getDrawable(
-                    R.drawable.lander_firing);
-            mCrashedImage = context.getResources().getDrawable(
-                    R.drawable.lander_crashed);
+//            mLanderImage = context.getResources().getDrawable(
+//                    R.drawable.lander_plain);
+//            mFiringImage = context.getResources().getDrawable(
+//                    R.drawable.lander_firing);
+//            mCrashedImage = context.getResources().getDrawable(
+//                    R.drawable.lander_crashed);
 
             // load background image as a Bitmap instead of a Drawable b/c
             // we don't need to transform it and it's faster to draw this way
-            mBackgroundImage = BitmapFactory.decodeResource(res,
-                    R.drawable.earthrise);
+//            mBackgroundImage = BitmapFactory.decodeResource(res,
+//                    R.drawable.earthrise);
 
             // Use the regular lander image as the model size for all sprites
-            mLanderWidth = mLanderImage.getIntrinsicWidth();
-            mLanderHeight = mLanderImage.getIntrinsicHeight();
+//            mLanderWidth = mLanderImage.getIntrinsicWidth();
+//            mLanderHeight = mLanderImage.getIntrinsicHeight();
 
             // Initialize paints for speedometer
-            mLinePaint = new Paint();
-            mLinePaint.setAntiAlias(true);
-            mLinePaint.setARGB(255, 0, 255, 0);
+//            mLinePaint = new Paint();
+//            mLinePaint.setAntiAlias(true);
+//            mLinePaint.setARGB(255, 0, 255, 0);
 
-            mLinePaintBad = new Paint();
-            mLinePaintBad.setAntiAlias(true);
-            mLinePaintBad.setARGB(255, 120, 180, 0);
+//            mLinePaintBad = new Paint();
+//            mLinePaintBad.setAntiAlias(true);
+//            mLinePaintBad.setARGB(255, 120, 180, 0);
 
-            mScratchRect = new RectF(0, 0, 0, 0);
+//            mScratchRect = new RectF(0, 0, 0, 0);
 
-            mWinsInARow = 0;
-            mDifficulty = DIFFICULTY_MEDIUM;
+//            mWinsInARow = 0;
+//            mDifficulty = DIFFICULTY_MEDIUM;
 
             // initial show-up of lander (not yet playing)
-            mX = mLanderWidth;
-            mY = mLanderHeight * 2;
-            mFuel = PHYS_FUEL_INIT;
-            mDX = 0;
-            mDY = 0;
-            mHeading = 0;
-            mEngineFiring = true;
+//            mX = mLanderWidth;
+//            mY = mLanderHeight * 2;
+//            mFuel = PHYS_FUEL_INIT;
+//            mDX = 0;
+//            mDY = 0;
+//            mHeading = 0;
+//            mEngineFiring = true;
         }
 
         /**
@@ -252,45 +291,45 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         public void doStart() {
             synchronized (mSurfaceHolder) {
                 // First set the game for Medium difficulty
-                mFuel = PHYS_FUEL_INIT;
-                mEngineFiring = false;
-                mGoalWidth = (int) (mLanderWidth * TARGET_WIDTH);
-                mGoalSpeed = TARGET_SPEED;
-                mGoalAngle = TARGET_ANGLE;
-                int speedInit = PHYS_SPEED_INIT;
+//                mFuel = PHYS_FUEL_INIT;
+//                mEngineFiring = false;
+//                mGoalWidth = (int) (mLanderWidth * TARGET_WIDTH);
+//                mGoalSpeed = TARGET_SPEED;
+//                mGoalAngle = TARGET_ANGLE;
+//                int speedInit = PHYS_SPEED_INIT;
 
                 // Adjust difficulty params for EASY/HARD
-                if (mDifficulty == DIFFICULTY_EASY) {
-                    mFuel = mFuel * 3 / 2;
-                    mGoalWidth = mGoalWidth * 4 / 3;
-                    mGoalSpeed = mGoalSpeed * 3 / 2;
-                    mGoalAngle = mGoalAngle * 4 / 3;
-                    speedInit = speedInit * 3 / 4;
-                } else if (mDifficulty == DIFFICULTY_HARD) {
-                    mFuel = mFuel * 7 / 8;
-                    mGoalWidth = mGoalWidth * 3 / 4;
-                    mGoalSpeed = mGoalSpeed * 7 / 8;
-                    speedInit = speedInit * 4 / 3;
-                }
-
-                // pick a convenient initial location for the lander sprite
-                mX = mCanvasWidth / 2;
-                mY = mCanvasHeight - mLanderHeight / 2;
-
-                // start with a little random motion
-                mDY = Math.random() * -speedInit;
-                mDX = Math.random() * 2 * speedInit - speedInit;
-                mHeading = 0;
-
-                // Figure initial spot for landing, not too near center
-                while (true) {
-                    mGoalX = (int) (Math.random() * (mCanvasWidth - mGoalWidth));
-                    if (Math.abs(mGoalX - (mX - mLanderWidth / 2)) > mCanvasHeight / 6)
-                        break;
-                }
-
-                mLastTime = System.currentTimeMillis() + 100;
-                setState(STATE_RUNNING);
+//                if (mDifficulty == DIFFICULTY_EASY) {
+//                    mFuel = mFuel * 3 / 2;
+//                    mGoalWidth = mGoalWidth * 4 / 3;
+//                    mGoalSpeed = mGoalSpeed * 3 / 2;
+//                    mGoalAngle = mGoalAngle * 4 / 3;
+//                    speedInit = speedInit * 3 / 4;
+//                } else if (mDifficulty == DIFFICULTY_HARD) {
+//                    mFuel = mFuel * 7 / 8;
+//                    mGoalWidth = mGoalWidth * 3 / 4;
+//                    mGoalSpeed = mGoalSpeed * 7 / 8;
+//                    speedInit = speedInit * 4 / 3;
+//                }
+//
+//                // pick a convenient initial location for the lander sprite
+//                mX = mCanvasWidth / 2;
+//                mY = mCanvasHeight - mLanderHeight / 2;
+//
+//                // start with a little random motion
+//                mDY = Math.random() * -speedInit;
+//                mDX = Math.random() * 2 * speedInit - speedInit;
+//                mHeading = 0;
+//
+//                // Figure initial spot for landing, not too near center
+//                while (true) {
+//                    mGoalX = (int) (Math.random() * (mCanvasWidth - mGoalWidth));
+//                    if (Math.abs(mGoalX - (mX - mLanderWidth / 2)) > mCanvasHeight / 6)
+//                        break;
+//                }
+//
+//                mLastTime = System.currentTimeMillis() + 100;
+//                setState(STATE_RUNNING);
             }
         }
 
@@ -299,7 +338,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public void pause() {
             synchronized (mSurfaceHolder) {
-                if (mMode == STATE_RUNNING) setState(STATE_PAUSE);
+//                if (mMode == STATE_RUNNING) setState(STATE_PAUSE);
             }
         }
 
@@ -312,37 +351,45 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public synchronized void restoreState(Bundle savedState) {
             synchronized (mSurfaceHolder) {
-                setState(STATE_PAUSE);
-                mRotating = 0;
-                mEngineFiring = false;
-
-                mDifficulty = savedState.getInt(KEY_DIFFICULTY);
-                mX = savedState.getDouble(KEY_X);
-                mY = savedState.getDouble(KEY_Y);
-                mDX = savedState.getDouble(KEY_DX);
-                mDY = savedState.getDouble(KEY_DY);
-                mHeading = savedState.getDouble(KEY_HEADING);
-
-                mLanderWidth = savedState.getInt(KEY_LANDER_WIDTH);
-                mLanderHeight = savedState.getInt(KEY_LANDER_HEIGHT);
-                mGoalX = savedState.getInt(KEY_GOAL_X);
-                mGoalSpeed = savedState.getInt(KEY_GOAL_SPEED);
-                mGoalAngle = savedState.getInt(KEY_GOAL_ANGLE);
-                mGoalWidth = savedState.getInt(KEY_GOAL_WIDTH);
-                mWinsInARow = savedState.getInt(KEY_WINS);
-                mFuel = savedState.getDouble(KEY_FUEL);
+//                setState(STATE_PAUSE);
+//                mRotating = 0;
+//                mEngineFiring = false;
+//
+//                mDifficulty = savedState.getInt(KEY_DIFFICULTY);
+//                mX = savedState.getDouble(KEY_X);
+//                mY = savedState.getDouble(KEY_Y);
+//                mDX = savedState.getDouble(KEY_DX);
+//                mDY = savedState.getDouble(KEY_DY);
+//                mHeading = savedState.getDouble(KEY_HEADING);
+//
+//                mLanderWidth = savedState.getInt(KEY_LANDER_WIDTH);
+//                mLanderHeight = savedState.getInt(KEY_LANDER_HEIGHT);
+//                mGoalX = savedState.getInt(KEY_GOAL_X);
+//                mGoalSpeed = savedState.getInt(KEY_GOAL_SPEED);
+//                mGoalAngle = savedState.getInt(KEY_GOAL_ANGLE);
+//                mGoalWidth = savedState.getInt(KEY_GOAL_WIDTH);
+//                mWinsInARow = savedState.getInt(KEY_WINS);
+//                mFuel = savedState.getDouble(KEY_FUEL);
             }
         }
 
         @Override
         public void run() {
-            while (mRun) {
+            //while (mRun) {
+            while (true) {
                 Canvas c = null;
                 try {
                     c = mSurfaceHolder.lockCanvas(null);
                     synchronized (mSurfaceHolder) {
-                        if (mMode == STATE_RUNNING) updatePhysics();
+                        //if (mMode == STATE_RUNNING) 
+                        //	updatePhysics();
                         doDraw(c);
+                        try {
+							sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
                     }
                 } finally {
                     // do this in a finally so that if an exception is thrown
@@ -351,7 +398,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                     if (c != null) {
                         mSurfaceHolder.unlockCanvasAndPost(c);
                     }
-                }
+                }                
             }
         }
 
@@ -363,23 +410,23 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public Bundle saveState(Bundle map) {
             synchronized (mSurfaceHolder) {
-                if (map != null) {
-                    map.putInt(KEY_DIFFICULTY, Integer.valueOf(mDifficulty));
-                    map.putDouble(KEY_X, Double.valueOf(mX));
-                    map.putDouble(KEY_Y, Double.valueOf(mY));
-                    map.putDouble(KEY_DX, Double.valueOf(mDX));
-                    map.putDouble(KEY_DY, Double.valueOf(mDY));
-                    map.putDouble(KEY_HEADING, Double.valueOf(mHeading));
-                    map.putInt(KEY_LANDER_WIDTH, Integer.valueOf(mLanderWidth));
-                    map.putInt(KEY_LANDER_HEIGHT, Integer
-                            .valueOf(mLanderHeight));
-                    map.putInt(KEY_GOAL_X, Integer.valueOf(mGoalX));
-                    map.putInt(KEY_GOAL_SPEED, Integer.valueOf(mGoalSpeed));
-                    map.putInt(KEY_GOAL_ANGLE, Integer.valueOf(mGoalAngle));
-                    map.putInt(KEY_GOAL_WIDTH, Integer.valueOf(mGoalWidth));
-                    map.putInt(KEY_WINS, Integer.valueOf(mWinsInARow));
-                    map.putDouble(KEY_FUEL, Double.valueOf(mFuel));
-                }
+//                if (map != null) {
+//                    map.putInt(KEY_DIFFICULTY, Integer.valueOf(mDifficulty));
+//                    map.putDouble(KEY_X, Double.valueOf(mX));
+//                    map.putDouble(KEY_Y, Double.valueOf(mY));
+//                    map.putDouble(KEY_DX, Double.valueOf(mDX));
+//                    map.putDouble(KEY_DY, Double.valueOf(mDY));
+//                    map.putDouble(KEY_HEADING, Double.valueOf(mHeading));
+//                    map.putInt(KEY_LANDER_WIDTH, Integer.valueOf(mLanderWidth));
+//                    map.putInt(KEY_LANDER_HEIGHT, Integer
+//                            .valueOf(mLanderHeight));
+//                    map.putInt(KEY_GOAL_X, Integer.valueOf(mGoalX));
+//                    map.putInt(KEY_GOAL_SPEED, Integer.valueOf(mGoalSpeed));
+//                    map.putInt(KEY_GOAL_ANGLE, Integer.valueOf(mGoalAngle));
+//                    map.putInt(KEY_GOAL_WIDTH, Integer.valueOf(mGoalWidth));
+//                    map.putInt(KEY_WINS, Integer.valueOf(mWinsInARow));
+//                    map.putDouble(KEY_FUEL, Double.valueOf(mFuel));
+//                }
             }
             return map;
         }
@@ -391,7 +438,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public void setDifficulty(int difficulty) {
             synchronized (mSurfaceHolder) {
-                mDifficulty = difficulty;
+                //mDifficulty = difficulty;
             }
         }
 
@@ -400,7 +447,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public void setFiring(boolean firing) {
             synchronized (mSurfaceHolder) {
-                mEngineFiring = firing;
+                //mEngineFiring = firing;
             }
         }
 
@@ -446,44 +493,44 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
              * thread, which updates the user-text View.
              */
             synchronized (mSurfaceHolder) {
-                mMode = mode;
-
-                if (mMode == STATE_RUNNING) {
-                    Message msg = mHandler.obtainMessage();
-                    Bundle b = new Bundle();
-                    b.putString("text", "");
-                    b.putInt("viz", View.INVISIBLE);
-                    msg.setData(b);
-                    mHandler.sendMessage(msg);
-                } else {
-                    mRotating = 0;
-                    mEngineFiring = false;
-                    Resources res = mContext.getResources();
-                    CharSequence str = "";
-                    if (mMode == STATE_READY)
-                        str = res.getText(R.string.mode_ready);
-                    else if (mMode == STATE_PAUSE)
-                        str = res.getText(R.string.mode_pause);
-                    else if (mMode == STATE_LOSE)
-                        str = res.getText(R.string.mode_lose);
-                    else if (mMode == STATE_WIN)
-                        str = res.getString(R.string.mode_win_prefix)
-                                + mWinsInARow + " "
-                                + res.getString(R.string.mode_win_suffix);
-
-                    if (message != null) {
-                        str = message + "\n" + str;
-                    }
-
-                    if (mMode == STATE_LOSE) mWinsInARow = 0;
-
-                    Message msg = mHandler.obtainMessage();
-                    Bundle b = new Bundle();
-                    b.putString("text", str.toString());
-                    b.putInt("viz", View.VISIBLE);
-                    msg.setData(b);
-                    mHandler.sendMessage(msg);
-                }
+//                mMode = mode;
+//
+//                if (mMode == STATE_RUNNING) {
+//                    Message msg = mHandler.obtainMessage();
+//                    Bundle b = new Bundle();
+//                    b.putString("text", "");
+//                    b.putInt("viz", View.INVISIBLE);
+//                    msg.setData(b);
+//                    mHandler.sendMessage(msg);
+//                } else {
+//                    mRotating = 0;
+//                    mEngineFiring = false;
+//                    Resources res = mContext.getResources();
+//                    CharSequence str = "";
+//                    if (mMode == STATE_READY)
+//                        str = res.getText(R.string.mode_ready);
+//                    else if (mMode == STATE_PAUSE)
+//                        str = res.getText(R.string.mode_pause);
+//                    else if (mMode == STATE_LOSE)
+//                        str = res.getText(R.string.mode_lose);
+//                    else if (mMode == STATE_WIN)
+//                        str = res.getString(R.string.mode_win_prefix)
+//                                + mWinsInARow + " "
+//                                + res.getString(R.string.mode_win_suffix);
+//
+//                    if (message != null) {
+//                        str = message + "\n" + str;
+//                    }
+//
+//                    if (mMode == STATE_LOSE) mWinsInARow = 0;
+//
+//                    Message msg = mHandler.obtainMessage();
+//                    Bundle b = new Bundle();
+//                    b.putString("text", str.toString());
+//                    b.putInt("viz", View.VISIBLE);
+//                    msg.setData(b);
+//                    mHandler.sendMessage(msg);
+//                }
             }
         }
 
@@ -491,12 +538,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         public void setSurfaceSize(int width, int height) {
             // synchronized to make sure these all change atomically
             synchronized (mSurfaceHolder) {
-                mCanvasWidth = width;
-                mCanvasHeight = height;
-
-                // don't forget to resize the background image
-                mBackgroundImage = mBackgroundImage.createScaledBitmap(
-                        mBackgroundImage, width, height, true);
+//                mCanvasWidth = width;
+//                mCanvasHeight = height;
+//
+//                // don't forget to resize the background image
+//                mBackgroundImage = mBackgroundImage.createScaledBitmap(
+//                        mBackgroundImage, width, height, true);
             }
         }
 
@@ -506,9 +553,9 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         public void unpause() {
             // Move the real time clock up to now
             synchronized (mSurfaceHolder) {
-                mLastTime = System.currentTimeMillis() + 100;
+                //mLastTime = System.currentTimeMillis() + 100;
             }
-            setState(STATE_RUNNING);
+            //setState(STATE_RUNNING);
         }
 
         /**
@@ -520,45 +567,45 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         boolean doKeyDown(int keyCode, KeyEvent msg) {
             synchronized (mSurfaceHolder) {
-                boolean okStart = false;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) okStart = true;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) okStart = true;
-                if (keyCode == KeyEvent.KEYCODE_S) okStart = true;
-
-                boolean center = (keyCode == KeyEvent.KEYCODE_DPAD_UP);
-
-                if (okStart
-                        && (mMode == STATE_READY || mMode == STATE_LOSE || mMode == STATE_WIN)) {
-                    // ready-to-start -> start
-                    doStart();
-                    return true;
-                } else if (mMode == STATE_PAUSE && okStart) {
-                    // paused -> running
-                    unpause();
-                    return true;
-                } else if (mMode == STATE_RUNNING) {
-                    // center/space -> fire
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-                            || keyCode == KeyEvent.KEYCODE_SPACE) {
-                        setFiring(true);
-                        return true;
-                        // left/q -> left
-                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
-                            || keyCode == KeyEvent.KEYCODE_Q) {
-                        mRotating = -1;
-                        return true;
-                        // right/w -> right
-                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
-                            || keyCode == KeyEvent.KEYCODE_W) {
-                        mRotating = 1;
-                        return true;
-                        // up -> pause
-                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                        pause();
-                        return true;
-                    }
-                }
-
+//                boolean okStart = false;
+//                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) okStart = true;
+//                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) okStart = true;
+//                if (keyCode == KeyEvent.KEYCODE_S) okStart = true;
+//
+//                boolean center = (keyCode == KeyEvent.KEYCODE_DPAD_UP);
+//
+//                if (okStart
+//                        && (mMode == STATE_READY || mMode == STATE_LOSE || mMode == STATE_WIN)) {
+//                    // ready-to-start -> start
+//                    doStart();
+//                    return true;
+//                } else if (mMode == STATE_PAUSE && okStart) {
+//                    // paused -> running
+//                    unpause();
+//                    return true;
+//                } else if (mMode == STATE_RUNNING) {
+//                    // center/space -> fire
+//                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+//                            || keyCode == KeyEvent.KEYCODE_SPACE) {
+//                        setFiring(true);
+//                        return true;
+//                        // left/q -> left
+//                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+//                            || keyCode == KeyEvent.KEYCODE_Q) {
+//                        mRotating = -1;
+//                        return true;
+//                        // right/w -> right
+//                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+//                            || keyCode == KeyEvent.KEYCODE_W) {
+//                        mRotating = 1;
+//                        return true;
+//                        // up -> pause
+//                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+//                        pause();
+//                        return true;
+//                    }
+//                }
+//
                 return false;
             }
         }
@@ -572,22 +619,22 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         boolean doKeyUp(int keyCode, KeyEvent msg) {
             boolean handled = false;
-
-            synchronized (mSurfaceHolder) {
-                if (mMode == STATE_RUNNING) {
-                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-                            || keyCode == KeyEvent.KEYCODE_SPACE) {
-                        setFiring(false);
-                        handled = true;
-                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
-                            || keyCode == KeyEvent.KEYCODE_Q
-                            || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
-                            || keyCode == KeyEvent.KEYCODE_W) {
-                        mRotating = 0;
-                        handled = true;
-                    }
-                }
-            }
+//
+//            synchronized (mSurfaceHolder) {
+//                if (mMode == STATE_RUNNING) {
+//                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
+//                            || keyCode == KeyEvent.KEYCODE_SPACE) {
+//                        setFiring(false);
+//                        handled = true;
+//                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+//                            || keyCode == KeyEvent.KEYCODE_Q
+//                            || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
+//                            || keyCode == KeyEvent.KEYCODE_W) {
+//                        mRotating = 0;
+//                        handled = true;
+//                    }
+//                }
+//            }
 
             return handled;
         }
@@ -599,60 +646,90 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         private void doDraw(Canvas canvas) {
             // Draw the background image. Operations on the Canvas accumulate
             // so this is like clearing the screen.
-            canvas.drawBitmap(mBackgroundImage, 0, 0, null);
+            //canvas.drawBitmap(mBackgroundImage, 0, 0, null);
 
             int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
             int xLeft = (int) mX - mLanderWidth / 2;
 
-            // Draw the fuel gauge
-            int fuelWidth = (int) (UI_BAR * mFuel / PHYS_FUEL_MAX);
-            mScratchRect.set(4, 4, 4 + fuelWidth, 4 + UI_BAR_HEIGHT);
-            canvas.drawRect(mScratchRect, mLinePaint);
+            canvas.drawRGB(255, 255, 255);
+            
+            int height = canvas.getHeight();
+            int width = canvas.getWidth();
+            
+            float cx = width/2;
+            float cy = height/2;
+            
 
-            // Draw the speed gauge, with a two-tone effect
-            double speed = Math.sqrt(mDX * mDX + mDY * mDY);
-            int speedWidth = (int) (UI_BAR * speed / PHYS_SPEED_MAX);
+            int rad = 90;
 
-            if (speed <= mGoalSpeed) {
-                mScratchRect.set(4 + UI_BAR + 4, 4,
-                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
-                canvas.drawRect(mScratchRect, mLinePaint);
-            } else {
-                // Draw the bad color in back, with the good color in front of
-                // it
-                mScratchRect.set(4 + UI_BAR + 4, 4,
-                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
-                canvas.drawRect(mScratchRect, mLinePaintBad);
-                int goalWidth = (UI_BAR * mGoalSpeed / PHYS_SPEED_MAX);
-                mScratchRect.set(4 + UI_BAR + 4, 4, 4 + UI_BAR + 4 + goalWidth,
-                        4 + UI_BAR_HEIGHT);
-                canvas.drawRect(mScratchRect, mLinePaint);
-            }
+            Paint paint = new Paint();
+            paint.setAlpha(150);
+            paint.setColor(Color.GREEN);
+            canvas.drawCircle(cx, cy, rad, paint);
+            
+            float x2 = (float) (cx + (rad * Math.sin(Math.toRadians(mCompassAngle))));
+            float y2 = (float) (cy - (rad * Math.cos(Math.toRadians(mCompassAngle))));
+            Paint paint2 = new Paint();
+            paint2.setAlpha(150);
+            paint2.setColor(Color.MAGENTA);
+            canvas.drawCircle(x2, y2, 5, paint2);
 
-            // Draw the landing pad
-            canvas.drawLine(mGoalX, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
-                    mGoalX + mGoalWidth, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
-                    mLinePaint);
+            
 
-
-            // Draw the ship with its current rotation
-            canvas.save();
-            canvas.rotate((float) mHeading, (float) mX, mCanvasHeight
-                    - (float) mY);
-            if (mMode == STATE_LOSE) {
-                mCrashedImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-                        + mLanderHeight);
-                mCrashedImage.draw(canvas);
-            } else if (mEngineFiring) {
-                mFiringImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-                        + mLanderHeight);
-                mFiringImage.draw(canvas);
-            } else {
-                mLanderImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-                        + mLanderHeight);
-                mLanderImage.draw(canvas);
-            }
-            canvas.restore();
+            
+			
+            
+            
+            
+//            // Draw the fuel gauge
+//            int fuelWidth = (int) (UI_BAR * mFuel / PHYS_FUEL_MAX);
+//            mScratchRect.set(4, 4, 4 + fuelWidth, 4 + UI_BAR_HEIGHT);
+//            canvas.drawRect(mScratchRect, mLinePaint);
+//
+//            // Draw the speed gauge, with a two-tone effect
+//            double speed = Math.sqrt(mDX * mDX + mDY * mDY);
+//            int speedWidth = (int) (UI_BAR * speed / PHYS_SPEED_MAX);
+//
+//            if (speed <= mGoalSpeed) {
+//                mScratchRect.set(4 + UI_BAR + 4, 4,
+//                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
+//                canvas.drawRect(mScratchRect, mLinePaint);
+//            } else {
+//                // Draw the bad color in back, with the good color in front of
+//                // it
+//                mScratchRect.set(4 + UI_BAR + 4, 4,
+//                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
+//                canvas.drawRect(mScratchRect, mLinePaintBad);
+//                int goalWidth = (UI_BAR * mGoalSpeed / PHYS_SPEED_MAX);
+//                mScratchRect.set(4 + UI_BAR + 4, 4, 4 + UI_BAR + 4 + goalWidth,
+//                        4 + UI_BAR_HEIGHT);
+//                canvas.drawRect(mScratchRect, mLinePaint);
+//            }
+//
+//            // Draw the landing pad
+//            canvas.drawLine(mGoalX, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
+//                    mGoalX + mGoalWidth, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
+//                    mLinePaint);
+//
+//
+//            // Draw the ship with its current rotation
+//            canvas.save();
+//            canvas.rotate((float) mHeading, (float) mX, mCanvasHeight
+//                    - (float) mY);
+//            if (mMode == STATE_LOSE) {
+//                mCrashedImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
+//                        + mLanderHeight);
+//                mCrashedImage.draw(canvas);
+//            } else if (mEngineFiring) {
+//                mFiringImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
+//                        + mLanderHeight);
+//                mFiringImage.draw(canvas);
+//            } else {
+//                mLanderImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
+//                        + mLanderHeight);
+//                mLanderImage.draw(canvas);
+//            }
+//            canvas.restore();
         }
 
         /**
@@ -666,102 +743,105 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             // Do nothing if mLastTime is in the future.
             // This allows the game-start to delay the start of the physics
             // by 100ms or whatever.
-            if (mLastTime > now) return;
-
-            double elapsed = (now - mLastTime) / 1000.0;
-
-            // mRotating -- update heading
-            if (mRotating != 0) {
-                mHeading += mRotating * (PHYS_SLEW_SEC * elapsed);
-
-                // Bring things back into the range 0..360
-                if (mHeading < 0)
-                    mHeading += 360;
-                else if (mHeading >= 360) mHeading -= 360;
-            }
-
-            // Base accelerations -- 0 for x, gravity for y
-            double ddx = 0.0;
-            double ddy = -PHYS_DOWN_ACCEL_SEC * elapsed;
-
-            if (mEngineFiring) {
-                // taking 0 as up, 90 as to the right
-                // cos(deg) is ddy component, sin(deg) is ddx component
-                double elapsedFiring = elapsed;
-                double fuelUsed = elapsedFiring * PHYS_FUEL_SEC;
-
-                // tricky case where we run out of fuel partway through the
-                // elapsed
-                if (fuelUsed > mFuel) {
-                    elapsedFiring = mFuel / fuelUsed * elapsed;
-                    fuelUsed = mFuel;
-
-                    // Oddball case where we adjust the "control" from here
-                    mEngineFiring = false;
-                }
-
-                mFuel -= fuelUsed;
-
-                // have this much acceleration from the engine
-                double accel = PHYS_FIRE_ACCEL_SEC * elapsedFiring;
-
-                double radians = 2 * Math.PI * mHeading / 360;
-                ddx = Math.sin(radians) * accel;
-                ddy += Math.cos(radians) * accel;
-            }
-
-            double dxOld = mDX;
-            double dyOld = mDY;
-
-            // figure speeds for the end of the period
-            mDX += ddx;
-            mDY += ddy;
-
-            // figure position based on average speed during the period
-            mX += elapsed * (mDX + dxOld) / 2;
-            mY += elapsed * (mDY + dyOld) / 2;
-
-            mLastTime = now;
-
-            // Evaluate if we have landed ... stop the game
-            double yLowerBound = TARGET_PAD_HEIGHT + mLanderHeight / 2
-                    - TARGET_BOTTOM_PADDING;
-            if (mY <= yLowerBound) {
-                mY = yLowerBound;
-
-                int result = STATE_LOSE;
-                CharSequence message = "";
-                Resources res = mContext.getResources();
-                double speed = Math.sqrt(mDX * mDX + mDY * mDY);
-                boolean onGoal = (mGoalX <= mX - mLanderWidth / 2 && mX
-                        + mLanderWidth / 2 <= mGoalX + mGoalWidth);
-
-                // "Hyperspace" win -- upside down, going fast,
-                // puts you back at the top.
-                if (onGoal && Math.abs(mHeading - 180) < mGoalAngle
-                        && speed > PHYS_SPEED_HYPERSPACE) {
-                    result = STATE_WIN;
-                    mWinsInARow++;
-                    doStart();
-
-                    return;
-                    // Oddball case: this case does a return, all other cases
-                    // fall through to setMode() below.
-                } else if (!onGoal) {
-                    message = res.getText(R.string.message_off_pad);
-                } else if (!(mHeading <= mGoalAngle || mHeading >= 360 - mGoalAngle)) {
-                    message = res.getText(R.string.message_bad_angle);
-                } else if (speed > mGoalSpeed) {
-                    message = res.getText(R.string.message_too_fast);
-                } else {
-                    result = STATE_WIN;
-                    mWinsInARow++;
-                }
-
-                setState(result, message);
-            }
+//            if (mLastTime > now) return;
+//
+//            double elapsed = (now - mLastTime) / 1000.0;
+//
+//            // mRotating -- update heading
+//            if (mRotating != 0) {
+//                mHeading += mRotating * (PHYS_SLEW_SEC * elapsed);
+//
+//                // Bring things back into the range 0..360
+//                if (mHeading < 0)
+//                    mHeading += 360;
+//                else if (mHeading >= 360) mHeading -= 360;
+//            }
+//
+//            // Base accelerations -- 0 for x, gravity for y
+//            double ddx = 0.0;
+//            double ddy = -PHYS_DOWN_ACCEL_SEC * elapsed;
+//
+//            if (mEngineFiring) {
+//                // taking 0 as up, 90 as to the right
+//                // cos(deg) is ddy component, sin(deg) is ddx component
+//                double elapsedFiring = elapsed;
+//                double fuelUsed = elapsedFiring * PHYS_FUEL_SEC;
+//
+//                // tricky case where we run out of fuel partway through the
+//                // elapsed
+//                if (fuelUsed > mFuel) {
+//                    elapsedFiring = mFuel / fuelUsed * elapsed;
+//                    fuelUsed = mFuel;
+//
+//                    // Oddball case where we adjust the "control" from here
+//                    mEngineFiring = false;
+//                }
+//
+//                mFuel -= fuelUsed;
+//
+//                // have this much acceleration from the engine
+//                double accel = PHYS_FIRE_ACCEL_SEC * elapsedFiring;
+//
+//                double radians = 2 * Math.PI * mHeading / 360;
+//                ddx = Math.sin(radians) * accel;
+//                ddy += Math.cos(radians) * accel;
+//            }
+//
+//            double dxOld = mDX;
+//            double dyOld = mDY;
+//
+//            // figure speeds for the end of the period
+//            mDX += ddx;
+//            mDY += ddy;
+//
+//            // figure position based on average speed during the period
+//            mX += elapsed * (mDX + dxOld) / 2;
+//            mY += elapsed * (mDY + dyOld) / 2;
+//
+//            mLastTime = now;
+//
+//            // Evaluate if we have landed ... stop the game
+//            double yLowerBound = TARGET_PAD_HEIGHT + mLanderHeight / 2
+//                    - TARGET_BOTTOM_PADDING;
+//            if (mY <= yLowerBound) {
+//                mY = yLowerBound;
+//
+//                int result = STATE_LOSE;
+//                CharSequence message = "";
+//                Resources res = mContext.getResources();
+//                double speed = Math.sqrt(mDX * mDX + mDY * mDY);
+//                boolean onGoal = (mGoalX <= mX - mLanderWidth / 2 && mX
+//                        + mLanderWidth / 2 <= mGoalX + mGoalWidth);
+//
+//                // "Hyperspace" win -- upside down, going fast,
+//                // puts you back at the top.
+//                if (onGoal && Math.abs(mHeading - 180) < mGoalAngle
+//                        && speed > PHYS_SPEED_HYPERSPACE) {
+//                    result = STATE_WIN;
+//                    mWinsInARow++;
+//                    doStart();
+//
+//                    return;
+//                    // Oddball case: this case does a return, all other cases
+//                    // fall through to setMode() below.
+//                } else if (!onGoal) {
+//                    message = res.getText(R.string.message_off_pad);
+//                } else if (!(mHeading <= mGoalAngle || mHeading >= 360 - mGoalAngle)) {
+//                    message = res.getText(R.string.message_bad_angle);
+//                } else if (speed > mGoalSpeed) {
+//                    message = res.getText(R.string.message_too_fast);
+//                } else {
+//                    result = STATE_WIN;
+//                    mWinsInARow++;
+//                }
+//
+//                setState(result, message);
+//            }
         }
-    }
+    }//end of compass thread
+    
+    
+    
 
     /** Handle to the application context, used to e.g. fetch Drawables. */
     private Context mContext;
@@ -783,8 +863,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         thread = new CompassThread(holder, context, new Handler() {
             @Override
             public void handleMessage(Message m) {
-                mStatusText.setVisibility(m.getData().getInt("viz"));
-                mStatusText.setText(m.getData().getString("text"));
+                //mStatusText.setVisibility(m.getData().getInt("viz"));
+                //mStatusText.setText(m.getData().getString("text"));
             }
         });
 
@@ -830,7 +910,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
      * Installs a pointer to the text view used for messages.
      */
     public void setTextView(TextView textView) {
-        mStatusText = textView;
+        //mStatusText = textView;
     }
 
     /* Callback invoked when the surface dimensions change. */
