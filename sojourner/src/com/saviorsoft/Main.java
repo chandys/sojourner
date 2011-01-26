@@ -131,10 +131,10 @@ public class Main extends Activity {
      */
     OnClickListener mCurrentLocationListener = new OnClickListener() {
         public void onClick(View v) {
-        	//Intent i = new Intent();
-        	//i.setClass(getApplicationContext(), com.saviorsoft.CompassView.class);
-        	//startActivity(i);
-        	setContentView(R.layout.lunar_layout);
+        	Intent i = new Intent();
+        	i.setClass(getApplicationContext(), com.saviorsoft.CompassActivity.class);
+        	startActivity(i);
+        	//setContentView(R.layout.lunar_layout);
         }
     };
 
