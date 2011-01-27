@@ -552,8 +552,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 //                // don't forget to resize the background image
                 mBackgroundImage = mBackgroundImage.createScaledBitmap(
                         mBackgroundImage, width, height, true);
-                mRoseImage = mRoseImage.createScaledBitmap(
-                        mRoseImage, mRoseImage.getWidth()*2, mRoseImage.getHeight()*2, true);
+//                mRoseImage = mRoseImage.createScaledBitmap(
+//                        mRoseImage, mRoseImage.getWidth()*2, mRoseImage.getHeight()*2, true);
             }
         }
 
@@ -656,7 +656,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         private void doDraw(Canvas canvas) {
             // Draw the background image. Operations on the Canvas accumulate
             // so this is like clearing the screen.
-            //canvas.drawBitmap(mBackgroundImage, 0, 0, null);
+
+        	
 
             int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
             int xLeft = (int) mX - mLanderWidth / 2;
@@ -696,6 +697,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 
             canvas.save();
             canvas.rotate(mCompassAngle,cx, cy);
+            //canvas.setDensity(240);
             canvas.drawBitmap(mRoseImage, rx, ry, null);
             canvas.restore();
             
