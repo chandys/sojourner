@@ -129,6 +129,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         /** The drawable to use as the background of the animation canvas */
         private Bitmap mBackgroundImage;
+        private Bitmap mRoseImage;
 
         /**
          * Current height of the surface/canvas.
@@ -244,6 +245,13 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             mContext = context;
 
             Resources res = context.getResources();
+            mBackgroundImage = BitmapFactory.decodeResource(res,
+                  R.drawable.stainless);
+            mRoseImage = BitmapFactory.decodeResource(res,
+                    R.drawable.compass_rose_browns);
+            
+            
+            
             // cache handles to our key sprites & other drawables
 //            mLanderImage = context.getResources().getDrawable(
 //                    R.drawable.lander_plain);
@@ -542,8 +550,10 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 //                mCanvasHeight = height;
 //
 //                // don't forget to resize the background image
-//                mBackgroundImage = mBackgroundImage.createScaledBitmap(
-//                        mBackgroundImage, width, height, true);
+                mBackgroundImage = mBackgroundImage.createScaledBitmap(
+                        mBackgroundImage, width, height, true);
+                mRoseImage = mRoseImage.createScaledBitmap(
+                        mRoseImage, mRoseImage.getWidth()*2, mRoseImage.getHeight()*2, true);
             }
         }
 
@@ -651,7 +661,11 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
             int xLeft = (int) mX - mLanderWidth / 2;
 
-            canvas.drawRGB(255, 255, 255);
+            //canvas.drawRGB(255, 255, 255);
+            canvas.drawBitmap(mBackgroundImage, 0, 0, null);
+
+            
+
             
             int height = canvas.getHeight();
             int width = canvas.getWidth();
@@ -660,10 +674,13 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             float cy = height/2;
             
 
+            float rx = cx - (mRoseImage.getWidth()/2);
+            float ry = cy - (mRoseImage.getHeight()/2);
+            
             int rad = 90;
 
             Paint paint = new Paint();
-            paint.setAlpha(150);
+            paint.setAlpha(100);
             paint.setColor(Color.GREEN);
             canvas.drawCircle(cx, cy, rad, paint);
             
@@ -675,7 +692,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.drawCircle(x2, y2, 5, paint2);
 
             
+            
 
+            canvas.save();
+            canvas.rotate(mCompassAngle,cx, cy);
+            canvas.drawBitmap(mRoseImage, rx, ry, null);
+            canvas.restore();
             
 			
             
