@@ -18,7 +18,6 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.TextView;
 
 
@@ -664,7 +663,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 
             //canvas.drawRGB(255, 255, 255);
             canvas.drawBitmap(mBackgroundImage, 0, 0, null);
-
+            //int den = canvas.getDensity();
             
 
             
@@ -697,7 +696,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 
             canvas.save();
             canvas.rotate(mCompassAngle,cx, cy);
-            //canvas.setDensity(240);
             canvas.drawBitmap(mRoseImage, rx, ry, null);
             canvas.restore();
             
