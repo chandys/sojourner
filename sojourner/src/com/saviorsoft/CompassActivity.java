@@ -38,6 +38,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
         txtDirection.setText("");
         
         
+        
         // get handles to the LunarView from XML, and its LunarThread
         mCompassView = (CompassView) findViewById(R.id.compsurface);
         mCompassThread = mCompassView.getThread();
