@@ -33,10 +33,35 @@ import android.widget.TextView;
 class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     class CompassThread extends Thread {
         private float mCompassAngle = 0;
+        private float mLastCompassAngle = 0;
         private float mWayPointAngle = -1;
+        private float mAzimuth = 0;
+        private float mPitch = 0;
+        private float mRoll = 0;
+        
+        //myAzimuth = Math.round(event.values[0]);
+        //myPitch = Math.round(event.values[1]);
+        //myRoll = Math.round(event.values[2]);
+
+        //String out = String.format("Azimuth: %.2f\n\nPitch:%.2f\n\nRoll:%.2f\n\n", 
+        //      myAzimuth, myPitch, myRoll);
+        //txtRawData.setText(out);
+        
     	
 
         
+
+		public void setRoll(float mRoll) {
+			this.mRoll = mRoll;
+		}
+
+		public void setPitch(float mPitch) {
+			this.mPitch = mPitch;
+		}
+
+		public void setAzimuth(float mAzimuth) {
+			this.mAzimuth = mAzimuth;
+		}
 
 		public void setmCompassAngle(float mCompassAngle) {
 			this.mCompassAngle = mCompassAngle;
@@ -50,9 +75,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 			this.mWayPointAngle = mWayPointAngle;
 		}
 
-		public float getmWayPointAngle() {
-			return mWayPointAngle;
-		}
         
         
         
@@ -68,9 +90,9 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     	/*
          * Difficulty setting constants
          */
-        public static final int DIFFICULTY_EASY = 0;
-        public static final int DIFFICULTY_HARD = 1;
-        public static final int DIFFICULTY_MEDIUM = 2;
+//        public static final int DIFFICULTY_EASY = 0;
+//        public static final int DIFFICULTY_HARD = 1;
+//        public static final int DIFFICULTY_MEDIUM = 2;
         /*
          * Physics constants
          */
@@ -335,8 +357,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 //                        break;
 //                }
 //
-//                mLastTime = System.currentTimeMillis() + 100;
-//                setState(STATE_RUNNING);
+                mLastTime = System.currentTimeMillis() + 100;
+                setState(STATE_RUNNING);
             }
         }
 
@@ -345,7 +367,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public void pause() {
             synchronized (mSurfaceHolder) {
-//                if (mMode == STATE_RUNNING) setState(STATE_PAUSE);
+                if (mMode == STATE_RUNNING) setState(STATE_PAUSE);
             }
         }
 
@@ -358,7 +380,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public synchronized void restoreState(Bundle savedState) {
             synchronized (mSurfaceHolder) {
-//                setState(STATE_PAUSE);
+                setState(STATE_PAUSE);
 //                mRotating = 0;
 //                mEngineFiring = false;
 //
@@ -382,21 +404,21 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 
         @Override
         public void run() {
-            //while (mRun) {
-            while (true) {
+            while (mRun) {
+            //while (true) {
                 Canvas c = null;
                 try {
                     c = mSurfaceHolder.lockCanvas(null);
                     synchronized (mSurfaceHolder) {
-                        //if (mMode == STATE_RUNNING) 
-                        //	updatePhysics();
+                        if (mMode == STATE_RUNNING) 
+                        	updatePhysics();
                         doDraw(c);
-                        try {
-							sleep(100);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+                        //try {
+						//	sleep(100);
+						//} catch (InterruptedException e) {
+						//	// TODO Auto-generated catch block
+						//	e.printStackTrace();
+						//}
                     }
                 } finally {
                     // do this in a finally so that if an exception is thrown
@@ -500,16 +522,16 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
              * thread, which updates the user-text View.
              */
             synchronized (mSurfaceHolder) {
-//                mMode = mode;
-//
-//                if (mMode == STATE_RUNNING) {
+                mMode = mode;
+
+                if (mMode == STATE_RUNNING) {
 //                    Message msg = mHandler.obtainMessage();
 //                    Bundle b = new Bundle();
 //                    b.putString("text", "");
 //                    b.putInt("viz", View.INVISIBLE);
 //                    msg.setData(b);
 //                    mHandler.sendMessage(msg);
-//                } else {
+                } else {
 //                    mRotating = 0;
 //                    mEngineFiring = false;
 //                    Resources res = mContext.getResources();
@@ -537,7 +559,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 //                    b.putInt("viz", View.VISIBLE);
 //                    msg.setData(b);
 //                    mHandler.sendMessage(msg);
-//                }
+                }
             }
         }
 
@@ -545,8 +567,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         public void setSurfaceSize(int width, int height) {
             // synchronized to make sure these all change atomically
             synchronized (mSurfaceHolder) {
-//                mCanvasWidth = width;
-//                mCanvasHeight = height;
+                mCanvasWidth = width;
+                mCanvasHeight = height;
 //
 //                // don't forget to resize the background image
                 mBackgroundImage = mBackgroundImage.createScaledBitmap(
@@ -562,9 +584,9 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         public void unpause() {
             // Move the real time clock up to now
             synchronized (mSurfaceHolder) {
-                //mLastTime = System.currentTimeMillis() + 100;
+                mLastTime = System.currentTimeMillis() + 100;
             }
-            //setState(STATE_RUNNING);
+            setState(STATE_RUNNING);
         }
 
         /**
@@ -656,10 +678,15 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             // Draw the background image. Operations on the Canvas accumulate
             // so this is like clearing the screen.
 
+        	//if (mLastCompassAngle <  mCompassAngle + 5 &&
+        	//		mLastCompassAngle > mCompassAngle - 5){
+        	//	return;
+        	//}
+        	//mLastCompassAngle = mCompassAngle;
         	
-
-            int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
-            int xLeft = (int) mX - mLanderWidth / 2;
+        	
+            //int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
+            //int xLeft = (int) mX - mLanderWidth / 2;
 
             //canvas.drawRGB(255, 255, 255);
             canvas.drawBitmap(mBackgroundImage, 0, 0, null);
@@ -765,8 +792,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             // Do nothing if mLastTime is in the future.
             // This allows the game-start to delay the start of the physics
             // by 100ms or whatever.
-//            if (mLastTime > now) return;
-//
+            if (mLastTime > now) return;
+
 //            double elapsed = (now - mLastTime) / 1000.0;
 //
 //            // mRotating -- update heading
@@ -820,7 +847,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 //            mX += elapsed * (mDX + dxOld) / 2;
 //            mY += elapsed * (mDY + dyOld) / 2;
 //
-//            mLastTime = now;
+            mLastTime = now;
 //
 //            // Evaluate if we have landed ... stop the game
 //            double yLowerBound = TARGET_PAD_HEIGHT + mLanderHeight / 2
@@ -841,7 +868,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 //                        && speed > PHYS_SPEED_HYPERSPACE) {
 //                    result = STATE_WIN;
 //                    mWinsInARow++;
-//                    doStart();
+                    doStart();
 //
 //                    return;
 //                    // Oddball case: this case does a return, all other cases
@@ -950,6 +977,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         // waiting for the surface to be created
         thread.setRunning(true);
         thread.start();
+        thread.doStart();
     }
 
     /*

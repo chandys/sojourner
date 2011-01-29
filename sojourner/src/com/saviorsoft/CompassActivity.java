@@ -35,10 +35,6 @@ public class CompassActivity extends Activity implements SensorEventListener {
         txtRawData.setText("Compass");
         txtDirection.setText("");
         
-        //rose = (Rose) findViewById(R.id.rose2);
-        
-
-        
         
         // get handles to the LunarView from XML, and its LunarThread
         mCompassView = (CompassView) findViewById(R.id.compsurface);
@@ -59,6 +55,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
 
         // Real sensor manager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);        
+        
         
     }
     
@@ -94,7 +91,6 @@ public class CompassActivity extends Activity implements SensorEventListener {
                  myAzimuth, myPitch, myRoll);
            txtRawData.setText(out);
            
-           //rose.setDirection(rotate++);
            
            printDirection();
    }
