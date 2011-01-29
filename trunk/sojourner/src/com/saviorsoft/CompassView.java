@@ -9,7 +9,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,24 +34,16 @@ import android.widget.TextView;
  */
 class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     class CompassThread extends Thread {
-        private float mCompassAngle = 0;
         private float mLastCompassAngle = 0;
         private float mWayPointAngle = -1;
         private float mAzimuth = 0;
         private float mPitch = 0;
         private float mRoll = 0;
-        
-        //myAzimuth = Math.round(event.values[0]);
-        //myPitch = Math.round(event.values[1]);
-        //myRoll = Math.round(event.values[2]);
-
-        //String out = String.format("Azimuth: %.2f\n\nPitch:%.2f\n\nRoll:%.2f\n\n", 
-        //      myAzimuth, myPitch, myRoll);
-        //txtRawData.setText(out);
-        
-    	
-
-        
+        private Paint mTextPaintLargeBold = new Paint();
+        private Paint mTextPaintSmall = new Paint();
+        private Canvas mCanvas;
+        private RectF mTextBoxRect;
+        private Paint mTextBoxPaint;
 
 		public void setRoll(float mRoll) {
 			this.mRoll = mRoll;
@@ -63,14 +57,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 			this.mAzimuth = mAzimuth;
 		}
 
-		public void setmCompassAngle(float mCompassAngle) {
-			this.mCompassAngle = mCompassAngle;
-		}
-
-		public float getmCompassAngle() {
-			return mCompassAngle;
-		}
-        
         public void setmWayPointAngle(float mWayPointAngle) {
 			this.mWayPointAngle = mWayPointAngle;
 		}
@@ -271,7 +257,22 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             mRoseImage = BitmapFactory.decodeResource(res,
                     R.drawable.compass_rose_browns);
             
+            //text color and size
+            mTextPaintSmall.setTextSize(12);
+            mTextPaintSmall.setColor(Color.BLACK);
+            mTextPaintSmall.setAntiAlias(true);
+
+            mTextPaintLargeBold.setTextSize(24);
+            mTextPaintLargeBold.setColor(Color.BLACK);
+            mTextPaintLargeBold.setAntiAlias(true);
+            mTextPaintLargeBold.setTypeface(Typeface.DEFAULT_BOLD);
             
+            mTextBoxRect = new RectF(5,13, 130, 120);
+            mTextBoxPaint = new Paint();
+            mTextBoxPaint.setColor(Color.GREEN);
+            mTextBoxPaint.setAlpha(100);
+            mTextBoxPaint.setStrokeWidth(3);
+
             
             // cache handles to our key sprites & other drawables
 //            mLanderImage = context.getResources().getDrawable(
@@ -413,12 +414,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                         if (mMode == STATE_RUNNING) 
                         	updatePhysics();
                         doDraw(c);
-                        //try {
-						//	sleep(100);
-						//} catch (InterruptedException e) {
-						//	// TODO Auto-generated catch block
-						//	e.printStackTrace();
-						//}
                     }
                 } finally {
                     // do this in a finally so that if an exception is thrown
@@ -688,9 +683,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             //int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
             //int xLeft = (int) mX - mLanderWidth / 2;
 
-            //canvas.drawRGB(255, 255, 255);
+        	
+        	
+        	
+        	
+        	
             canvas.drawBitmap(mBackgroundImage, 0, 0, null);
-            //int den = canvas.getDensity();
             
 
             
@@ -698,36 +696,30 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             int width = canvas.getWidth();
             
             float cx = width/2;
-            float cy = height/2;
+            float cy = height/2 + 64;
             
 
             float rx = cx - (mRoseImage.getWidth()/2);
             float ry = cy - (mRoseImage.getHeight()/2);
             
-            int rad = 90;
+            int rad = (mRoseImage.getWidth()/2) + 10;
 
-            Paint paint = new Paint();
-            paint.setAlpha(100);
-            paint.setColor(Color.GREEN);
-            canvas.drawCircle(cx, cy, rad, paint);
             
-            float x2 = (float) (cx + (rad * Math.sin(Math.toRadians(mCompassAngle))));
-            float y2 = (float) (cy - (rad * Math.cos(Math.toRadians(mCompassAngle))));
+            float x2 = (float) (cx - (rad * Math.sin(Math.toRadians(mAzimuth))));
+            float y2 = (float) (cy - (rad * Math.cos(Math.toRadians(mAzimuth))));
             Paint paint2 = new Paint();
-            paint2.setAlpha(150);
+            paint2.setAlpha(100);
             paint2.setColor(Color.MAGENTA);
             canvas.drawCircle(x2, y2, 5, paint2);
 
             
-            
-
             canvas.save();
-            canvas.rotate(mCompassAngle,cx, cy);
+            canvas.rotate(-mAzimuth,cx, cy);
             canvas.drawBitmap(mRoseImage, rx, ry, null);
             canvas.restore();
             
-			
-            
+            mCanvas = canvas;
+            printDirection();
             
             
 //            // Draw the fuel gauge
@@ -794,99 +786,48 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             // by 100ms or whatever.
             if (mLastTime > now) return;
 
-//            double elapsed = (now - mLastTime) / 1000.0;
-//
-//            // mRotating -- update heading
-//            if (mRotating != 0) {
-//                mHeading += mRotating * (PHYS_SLEW_SEC * elapsed);
-//
-//                // Bring things back into the range 0..360
-//                if (mHeading < 0)
-//                    mHeading += 360;
-//                else if (mHeading >= 360) mHeading -= 360;
-//            }
-//
-//            // Base accelerations -- 0 for x, gravity for y
-//            double ddx = 0.0;
-//            double ddy = -PHYS_DOWN_ACCEL_SEC * elapsed;
-//
-//            if (mEngineFiring) {
-//                // taking 0 as up, 90 as to the right
-//                // cos(deg) is ddy component, sin(deg) is ddx component
-//                double elapsedFiring = elapsed;
-//                double fuelUsed = elapsedFiring * PHYS_FUEL_SEC;
-//
-//                // tricky case where we run out of fuel partway through the
-//                // elapsed
-//                if (fuelUsed > mFuel) {
-//                    elapsedFiring = mFuel / fuelUsed * elapsed;
-//                    fuelUsed = mFuel;
-//
-//                    // Oddball case where we adjust the "control" from here
-//                    mEngineFiring = false;
-//                }
-//
-//                mFuel -= fuelUsed;
-//
-//                // have this much acceleration from the engine
-//                double accel = PHYS_FIRE_ACCEL_SEC * elapsedFiring;
-//
-//                double radians = 2 * Math.PI * mHeading / 360;
-//                ddx = Math.sin(radians) * accel;
-//                ddy += Math.cos(radians) * accel;
-//            }
-//
-//            double dxOld = mDX;
-//            double dyOld = mDY;
-//
-//            // figure speeds for the end of the period
-//            mDX += ddx;
-//            mDY += ddy;
-//
-//            // figure position based on average speed during the period
-//            mX += elapsed * (mDX + dxOld) / 2;
-//            mY += elapsed * (mDY + dyOld) / 2;
-//
             mLastTime = now;
-//
-//            // Evaluate if we have landed ... stop the game
-//            double yLowerBound = TARGET_PAD_HEIGHT + mLanderHeight / 2
-//                    - TARGET_BOTTOM_PADDING;
-//            if (mY <= yLowerBound) {
-//                mY = yLowerBound;
-//
-//                int result = STATE_LOSE;
-//                CharSequence message = "";
-//                Resources res = mContext.getResources();
-//                double speed = Math.sqrt(mDX * mDX + mDY * mDY);
-//                boolean onGoal = (mGoalX <= mX - mLanderWidth / 2 && mX
-//                        + mLanderWidth / 2 <= mGoalX + mGoalWidth);
-//
-//                // "Hyperspace" win -- upside down, going fast,
-//                // puts you back at the top.
-//                if (onGoal && Math.abs(mHeading - 180) < mGoalAngle
-//                        && speed > PHYS_SPEED_HYPERSPACE) {
-//                    result = STATE_WIN;
-//                    mWinsInARow++;
                     doStart();
-//
-//                    return;
-//                    // Oddball case: this case does a return, all other cases
-//                    // fall through to setMode() below.
-//                } else if (!onGoal) {
-//                    message = res.getText(R.string.message_off_pad);
-//                } else if (!(mHeading <= mGoalAngle || mHeading >= 360 - mGoalAngle)) {
-//                    message = res.getText(R.string.message_bad_angle);
-//                } else if (speed > mGoalSpeed) {
-//                    message = res.getText(R.string.message_too_fast);
-//                } else {
-//                    result = STATE_WIN;
-//                    mWinsInARow++;
-//                }
-//
-//                setState(result, message);
-//            }
         }
+      
+        
+	   private void printDirection() {
+	      String out = new String("");
+	      if (mAzimuth < 22)
+	         out = "N";
+	      else if (mAzimuth >= 22 && mAzimuth < 67)
+	    	 out = "NE";
+	      else if (mAzimuth >= 67 && mAzimuth < 112)
+	    	 out = "E";
+	      else if (mAzimuth >= 112 && mAzimuth < 157)
+	    	 out = "SE";
+	      else if (mAzimuth >= 157 && mAzimuth < 202)
+	    	 out = "S";
+	      else if (mAzimuth >= 202 && mAzimuth < 247)
+	    	 out = "SW";
+	      else if (mAzimuth >= 247 && mAzimuth < 292)
+	    	 out = "W";
+	      else if (mAzimuth >= 292 && mAzimuth < 337)
+	    	 out = "NW";
+	      else if (mAzimuth >= 337)
+	    	 out = "N";
+	      else
+	       	 out = "";
+
+	      
+	      mCanvas.drawRoundRect(mTextBoxRect, 10f, 10f, mTextBoxPaint);
+	      mCanvas.drawText(out, 15, 40, mTextPaintLargeBold);
+	      
+	      //draw text stats
+	      out = String.format("Azimuth:    %.2f", mAzimuth);
+	      mCanvas.drawText(out, 15, 60, mTextPaintSmall);
+	      out = String.format("Pitch:    %.2f", mPitch, mRoll);
+	      mCanvas.drawText(out, 15, 80, mTextPaintSmall);
+	      out = String.format("Roll:    %.2f", mRoll);
+	      mCanvas.drawText(out, 15, 100, mTextPaintSmall);	      
+	   }
+
+        
     }//end of compass thread
     
     
