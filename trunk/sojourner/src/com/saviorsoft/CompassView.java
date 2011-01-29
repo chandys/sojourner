@@ -9,10 +9,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -267,11 +270,13 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             mTextPaintLargeBold.setAntiAlias(true);
             mTextPaintLargeBold.setTypeface(Typeface.DEFAULT_BOLD);
             
-            mTextBoxRect = new RectF(5,13, 130, 120);
+            mTextBoxRect = new RectF(5,13, 140, 120);
             mTextBoxPaint = new Paint();
             mTextBoxPaint.setColor(Color.GREEN);
             mTextBoxPaint.setAlpha(100);
-            mTextBoxPaint.setStrokeWidth(3);
+            //mTextBoxPaint.setStrokeWidth(30);
+  	        //mTextBoxPaint.setStyle(Style.FILL_AND_STROKE);
+
 
             
             // cache handles to our key sprites & other drawables
@@ -696,7 +701,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             int width = canvas.getWidth();
             
             float cx = width/2;
-            float cy = height/2 + 64;
+            float cy = height/2 + 46;
             
 
             float rx = cx - (mRoseImage.getWidth()/2);
@@ -814,9 +819,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 	      else
 	       	 out = "";
 
-	      
 	      mCanvas.drawRoundRect(mTextBoxRect, 10f, 10f, mTextBoxPaint);
 	      mCanvas.drawText(out, 15, 40, mTextPaintLargeBold);
+	      
+
+	      
+	      
 	      
 	      //draw text stats
 	      out = String.format("Azimuth:    %.2f", mAzimuth);

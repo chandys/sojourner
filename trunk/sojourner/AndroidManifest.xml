@@ -23,7 +23,7 @@
         </activity>
         <activity android:theme="@android:style/Theme.NoTitleBar" android:name="CompassView">
         </activity>
-        <activity android:theme="@android:style/Theme.NoTitleBar" android:name="CompassActivity">
+        <activity android:theme="@android:style/Theme.NoTitleBar" android:name="CompassActivity" android:screenOrientation="portrait">
         </activity>
 		<uses-library android:name="com.google.android.maps" android:required="true"/>
     </application>
