@@ -9,36 +9,22 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.TextView;
 
 
-/**
- * View that draws, takes keystrokes, etc. for a simple LunarLander game.
- * 
- * Has a mode which RUNNING, PAUSED, etc. Has a x, y, dx, dy, ... capturing the
- * current ship physics. All x/y etc. are measured with (0,0) at the lower left.
- * updatePhysics() advances the physics based on realtime. draw() renders the
- * ship, and does an invalidate() to prompt another draw() as soon as possible
- * by the system.
- */
 class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     class CompassThread extends Thread {
-        private float mLastCompassAngle = 0;
-        private float mWayPointAngle = -1;
+		private float mLastCompassAngle = 0;
+        private float mWayPointAngle = 240;
+        private float mWayPointDistance = 123;
         private float mAzimuth = 0;
         private float mPitch = 0;
         private float mRoll = 0;
@@ -65,35 +51,17 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 		}
 
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    	
-    	/*
-         * Difficulty setting constants
-         */
-//        public static final int DIFFICULTY_EASY = 0;
-//        public static final int DIFFICULTY_HARD = 1;
-//        public static final int DIFFICULTY_MEDIUM = 2;
-        /*
-         * Physics constants
-         */
-        public static final int PHYS_DOWN_ACCEL_SEC = 35;
-        public static final int PHYS_FIRE_ACCEL_SEC = 80;
-        public static final int PHYS_FUEL_INIT = 60;
-        public static final int PHYS_FUEL_MAX = 100;
-        public static final int PHYS_FUEL_SEC = 10;
-        public static final int PHYS_SLEW_SEC = 120; // degrees/second rotate
-        public static final int PHYS_SPEED_HYPERSPACE = 180;
-        public static final int PHYS_SPEED_INIT = 30;
-        public static final int PHYS_SPEED_MAX = 120;
+
+        private Bitmap mBackgroundImage;
+        private Bitmap mRoseImage;
+        private Handler mHandler;
+        private long mLastTime;
+        private int mMode;
+        private boolean mRun = false;
+        private SurfaceHolder mSurfaceHolder;
+        private int mCanvasHeight = 1;
+        private int mCanvasWidth = 1;
+
         /*
          * State-tracking constants
          */
@@ -102,149 +70,9 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         public static final int STATE_READY = 3;
         public static final int STATE_RUNNING = 4;
         public static final int STATE_WIN = 5;
+		private static final String KEY_WAYPOINTANGLE = "0";
+		private static final String KEY_WAYPOINTDISTANCE = "0";
 
-        /*
-         * Goal condition constants
-         */
-        public static final int TARGET_ANGLE = 18; // > this angle means crash
-        public static final int TARGET_BOTTOM_PADDING = 17; // px below gear
-        public static final int TARGET_PAD_HEIGHT = 8; // how high above ground
-        public static final int TARGET_SPEED = 28; // > this speed means crash
-        public static final double TARGET_WIDTH = 1.6; // width of target
-        /*
-         * UI constants (i.e. the speed & fuel bars)
-         */
-        public static final int UI_BAR = 100; // width of the bar(s)
-        public static final int UI_BAR_HEIGHT = 10; // height of the bar(s)
-        private static final String KEY_DIFFICULTY = "mDifficulty";
-        private static final String KEY_DX = "mDX";
-
-        private static final String KEY_DY = "mDY";
-        private static final String KEY_FUEL = "mFuel";
-        private static final String KEY_GOAL_ANGLE = "mGoalAngle";
-        private static final String KEY_GOAL_SPEED = "mGoalSpeed";
-        private static final String KEY_GOAL_WIDTH = "mGoalWidth";
-
-        private static final String KEY_GOAL_X = "mGoalX";
-        private static final String KEY_HEADING = "mHeading";
-        private static final String KEY_LANDER_HEIGHT = "mLanderHeight";
-        private static final String KEY_LANDER_WIDTH = "mLanderWidth";
-        private static final String KEY_WINS = "mWinsInARow";
-
-        private static final String KEY_X = "mX";
-        private static final String KEY_Y = "mY";
-
-        /*
-         * Member (state) fields
-         */
-        /** The drawable to use as the background of the animation canvas */
-        private Bitmap mBackgroundImage;
-        private Bitmap mRoseImage;
-
-        /**
-         * Current height of the surface/canvas.
-         * 
-         * @see #setSurfaceSize
-         */
-        private int mCanvasHeight = 1;
-
-        /**
-         * Current width of the surface/canvas.
-         * 
-         * @see #setSurfaceSize
-         */
-        private int mCanvasWidth = 1;
-
-        /** What to draw for the Lander when it has crashed */
-        private Drawable mCrashedImage;
-
-        /**
-         * Current difficulty -- amount of fuel, allowed angle, etc. Default is
-         * MEDIUM.
-         */
-        private int mDifficulty;
-
-        /** Velocity dx. */
-        private double mDX;
-
-        /** Velocity dy. */
-        private double mDY;
-
-        /** Is the engine burning? */
-        private boolean mEngineFiring;
-
-        /** What to draw for the Lander when the engine is firing */
-        private Drawable mFiringImage;
-
-        /** Fuel remaining */
-        private double mFuel;
-
-        /** Allowed angle. */
-        private int mGoalAngle;
-
-        /** Allowed speed. */
-        private int mGoalSpeed;
-
-        /** Width of the landing pad. */
-        private int mGoalWidth;
-
-        /** X of the landing pad. */
-        private int mGoalX;
-
-        /** Message handler used by thread to interact with TextView */
-        private Handler mHandler;
-
-        /**
-         * Lander heading in degrees, with 0 up, 90 right. Kept in the range
-         * 0..360.
-         */
-        private double mHeading;
-
-        /** Pixel height of lander image. */
-        private int mLanderHeight;
-
-        /** What to draw for the Lander in its normal state */
-        private Drawable mLanderImage;
-
-        /** Pixel width of lander image. */
-        private int mLanderWidth;
-
-        /** Used to figure out elapsed time between frames */
-        private long mLastTime;
-
-        /** Paint to draw the lines on screen. */
-        private Paint mLinePaint;
-
-        /** "Bad" speed-too-high variant of the line color. */
-        private Paint mLinePaintBad;
-
-        /** The state of the game. One of READY, RUNNING, PAUSE, LOSE, or WIN */
-        private int mMode;
-
-        /** Currently rotating, -1 left, 0 none, 1 right. */
-        private int mRotating;
-
-        /** Indicate whether the surface has been created & is ready to draw */
-        private boolean mRun = false;
-
-        /** Scratch rect object. */
-        private RectF mScratchRect;
-
-        /** Handle to the surface manager object we interact with */
-        private SurfaceHolder mSurfaceHolder;
-
-        /** Number of wins in a row. */
-        private int mWinsInARow;
-
-        /** X of lander center. */
-        private double mX;
-
-        /** Y of lander center. */
-        private double mY;
-
-
-        
-        
         
 
 		public CompassThread(SurfaceHolder surfaceHolder, Context context,
@@ -274,95 +102,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             mTextBoxPaint = new Paint();
             mTextBoxPaint.setColor(Color.GREEN);
             mTextBoxPaint.setAlpha(100);
-            //mTextBoxPaint.setStrokeWidth(30);
-  	        //mTextBoxPaint.setStyle(Style.FILL_AND_STROKE);
 
-
-            
-            // cache handles to our key sprites & other drawables
-//            mLanderImage = context.getResources().getDrawable(
-//                    R.drawable.lander_plain);
-//            mFiringImage = context.getResources().getDrawable(
-//                    R.drawable.lander_firing);
-//            mCrashedImage = context.getResources().getDrawable(
-//                    R.drawable.lander_crashed);
-
-            // load background image as a Bitmap instead of a Drawable b/c
-            // we don't need to transform it and it's faster to draw this way
-//            mBackgroundImage = BitmapFactory.decodeResource(res,
-//                    R.drawable.earthrise);
-
-            // Use the regular lander image as the model size for all sprites
-//            mLanderWidth = mLanderImage.getIntrinsicWidth();
-//            mLanderHeight = mLanderImage.getIntrinsicHeight();
-
-            // Initialize paints for speedometer
-//            mLinePaint = new Paint();
-//            mLinePaint.setAntiAlias(true);
-//            mLinePaint.setARGB(255, 0, 255, 0);
-
-//            mLinePaintBad = new Paint();
-//            mLinePaintBad.setAntiAlias(true);
-//            mLinePaintBad.setARGB(255, 120, 180, 0);
-
-//            mScratchRect = new RectF(0, 0, 0, 0);
-
-//            mWinsInARow = 0;
-//            mDifficulty = DIFFICULTY_MEDIUM;
-
-            // initial show-up of lander (not yet playing)
-//            mX = mLanderWidth;
-//            mY = mLanderHeight * 2;
-//            mFuel = PHYS_FUEL_INIT;
-//            mDX = 0;
-//            mDY = 0;
-//            mHeading = 0;
-//            mEngineFiring = true;
         }
 
-        /**
-         * Starts the game, setting parameters for the current difficulty.
-         */
-        public void doStart() {
-            synchronized (mSurfaceHolder) {
-                // First set the game for Medium difficulty
-//                mFuel = PHYS_FUEL_INIT;
-//                mEngineFiring = false;
-//                mGoalWidth = (int) (mLanderWidth * TARGET_WIDTH);
-//                mGoalSpeed = TARGET_SPEED;
-//                mGoalAngle = TARGET_ANGLE;
-//                int speedInit = PHYS_SPEED_INIT;
 
-                // Adjust difficulty params for EASY/HARD
-//                if (mDifficulty == DIFFICULTY_EASY) {
-//                    mFuel = mFuel * 3 / 2;
-//                    mGoalWidth = mGoalWidth * 4 / 3;
-//                    mGoalSpeed = mGoalSpeed * 3 / 2;
-//                    mGoalAngle = mGoalAngle * 4 / 3;
-//                    speedInit = speedInit * 3 / 4;
-//                } else if (mDifficulty == DIFFICULTY_HARD) {
-//                    mFuel = mFuel * 7 / 8;
-//                    mGoalWidth = mGoalWidth * 3 / 4;
-//                    mGoalSpeed = mGoalSpeed * 7 / 8;
-//                    speedInit = speedInit * 4 / 3;
-//                }
-//
-//                // pick a convenient initial location for the lander sprite
-//                mX = mCanvasWidth / 2;
-//                mY = mCanvasHeight - mLanderHeight / 2;
-//
-//                // start with a little random motion
-//                mDY = Math.random() * -speedInit;
-//                mDX = Math.random() * 2 * speedInit - speedInit;
-//                mHeading = 0;
-//
-//                // Figure initial spot for landing, not too near center
-//                while (true) {
-//                    mGoalX = (int) (Math.random() * (mCanvasWidth - mGoalWidth));
-//                    if (Math.abs(mGoalX - (mX - mLanderWidth / 2)) > mCanvasHeight / 6)
-//                        break;
-//                }
-//
+		public void doStart() {
+            synchronized (mSurfaceHolder) {
                 mLastTime = System.currentTimeMillis() + 100;
                 setState(STATE_RUNNING);
             }
@@ -373,38 +118,24 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public void pause() {
             synchronized (mSurfaceHolder) {
-                if (mMode == STATE_RUNNING) setState(STATE_PAUSE);
+                if (mMode == STATE_RUNNING) 
+                	setState(STATE_PAUSE);
             }
         }
 
         /**
-         * Restores game state from the indicated Bundle. Typically called when
+         * Restores state from the indicated Bundle. Typically called when
          * the Activity is being restored after having been previously
          * destroyed.
          * 
-         * @param savedState Bundle containing the game state
+         * @param savedState Bundle containing the compass state
          */
         public synchronized void restoreState(Bundle savedState) {
             synchronized (mSurfaceHolder) {
                 setState(STATE_PAUSE);
-//                mRotating = 0;
-//                mEngineFiring = false;
-//
-//                mDifficulty = savedState.getInt(KEY_DIFFICULTY);
-//                mX = savedState.getDouble(KEY_X);
-//                mY = savedState.getDouble(KEY_Y);
-//                mDX = savedState.getDouble(KEY_DX);
-//                mDY = savedState.getDouble(KEY_DY);
-//                mHeading = savedState.getDouble(KEY_HEADING);
-//
-//                mLanderWidth = savedState.getInt(KEY_LANDER_WIDTH);
-//                mLanderHeight = savedState.getInt(KEY_LANDER_HEIGHT);
-//                mGoalX = savedState.getInt(KEY_GOAL_X);
-//                mGoalSpeed = savedState.getInt(KEY_GOAL_SPEED);
-//                mGoalAngle = savedState.getInt(KEY_GOAL_ANGLE);
-//                mGoalWidth = savedState.getInt(KEY_GOAL_WIDTH);
-//                mWinsInARow = savedState.getInt(KEY_WINS);
-//                mFuel = savedState.getDouble(KEY_FUEL);
+
+                mWayPointAngle = savedState.getFloat(KEY_WAYPOINTANGLE);
+                mWayPointAngle = savedState.getFloat(KEY_WAYPOINTDISTANCE);
             }
         }
 
@@ -439,45 +170,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public Bundle saveState(Bundle map) {
             synchronized (mSurfaceHolder) {
-//                if (map != null) {
-//                    map.putInt(KEY_DIFFICULTY, Integer.valueOf(mDifficulty));
-//                    map.putDouble(KEY_X, Double.valueOf(mX));
-//                    map.putDouble(KEY_Y, Double.valueOf(mY));
-//                    map.putDouble(KEY_DX, Double.valueOf(mDX));
-//                    map.putDouble(KEY_DY, Double.valueOf(mDY));
-//                    map.putDouble(KEY_HEADING, Double.valueOf(mHeading));
-//                    map.putInt(KEY_LANDER_WIDTH, Integer.valueOf(mLanderWidth));
-//                    map.putInt(KEY_LANDER_HEIGHT, Integer
-//                            .valueOf(mLanderHeight));
-//                    map.putInt(KEY_GOAL_X, Integer.valueOf(mGoalX));
-//                    map.putInt(KEY_GOAL_SPEED, Integer.valueOf(mGoalSpeed));
-//                    map.putInt(KEY_GOAL_ANGLE, Integer.valueOf(mGoalAngle));
-//                    map.putInt(KEY_GOAL_WIDTH, Integer.valueOf(mGoalWidth));
-//                    map.putInt(KEY_WINS, Integer.valueOf(mWinsInARow));
-//                    map.putDouble(KEY_FUEL, Double.valueOf(mFuel));
-//                }
+                if (map != null) {
+                    map.putFloat(KEY_WAYPOINTANGLE, Float.valueOf(mWayPointAngle));
+                    map.putFloat(KEY_WAYPOINTDISTANCE, Float.valueOf(mWayPointDistance));
+                }
             }
             return map;
-        }
-
-        /**
-         * Sets the current difficulty.
-         * 
-         * @param difficulty
-         */
-        public void setDifficulty(int difficulty) {
-            synchronized (mSurfaceHolder) {
-                //mDifficulty = difficulty;
-            }
-        }
-
-        /**
-         * Sets if the engine is currently firing.
-         */
-        public void setFiring(boolean firing) {
-            synchronized (mSurfaceHolder) {
-                //mEngineFiring = firing;
-            }
         }
 
         /**
@@ -492,74 +190,16 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             mRun = b;
         }
 
-        /**
-         * Sets the game mode. That is, whether we are running, paused, in the
-         * failure state, in the victory state, etc.
-         * 
-         * @see #setState(int, CharSequence)
-         * @param mode one of the STATE_* constants
-         */
+
         public void setState(int mode) {
             synchronized (mSurfaceHolder) {
                 setState(mode, null);
             }
         }
 
-        /**
-         * Sets the game mode. That is, whether we are running, paused, in the
-         * failure state, in the victory state, etc.
-         * 
-         * @param mode one of the STATE_* constants
-         * @param message string to add to screen or null
-         */
         public void setState(int mode, CharSequence message) {
-            /*
-             * This method optionally can cause a text message to be displayed
-             * to the user when the mode changes. Since the View that actually
-             * renders that text is part of the main View hierarchy and not
-             * owned by this thread, we can't touch the state of that View.
-             * Instead we use a Message + Handler to relay commands to the main
-             * thread, which updates the user-text View.
-             */
             synchronized (mSurfaceHolder) {
                 mMode = mode;
-
-                if (mMode == STATE_RUNNING) {
-//                    Message msg = mHandler.obtainMessage();
-//                    Bundle b = new Bundle();
-//                    b.putString("text", "");
-//                    b.putInt("viz", View.INVISIBLE);
-//                    msg.setData(b);
-//                    mHandler.sendMessage(msg);
-                } else {
-//                    mRotating = 0;
-//                    mEngineFiring = false;
-//                    Resources res = mContext.getResources();
-//                    CharSequence str = "";
-//                    if (mMode == STATE_READY)
-//                        str = res.getText(R.string.mode_ready);
-//                    else if (mMode == STATE_PAUSE)
-//                        str = res.getText(R.string.mode_pause);
-//                    else if (mMode == STATE_LOSE)
-//                        str = res.getText(R.string.mode_lose);
-//                    else if (mMode == STATE_WIN)
-//                        str = res.getString(R.string.mode_win_prefix)
-//                                + mWinsInARow + " "
-//                                + res.getString(R.string.mode_win_suffix);
-//
-//                    if (message != null) {
-//                        str = message + "\n" + str;
-//                    }
-//
-//                    if (mMode == STATE_LOSE) mWinsInARow = 0;
-//
-//                    Message msg = mHandler.obtainMessage();
-//                    Bundle b = new Bundle();
-//                    b.putString("text", str.toString());
-//                    b.putInt("viz", View.VISIBLE);
-//                    msg.setData(b);
-//                    mHandler.sendMessage(msg);
-                }
             }
         }
 
@@ -569,12 +209,10 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             synchronized (mSurfaceHolder) {
                 mCanvasWidth = width;
                 mCanvasHeight = height;
-//
-//                // don't forget to resize the background image
+
+                // don't forget to resize the background image
                 mBackgroundImage = mBackgroundImage.createScaledBitmap(
                         mBackgroundImage, width, height, true);
-//                mRoseImage = mRoseImage.createScaledBitmap(
-//                        mRoseImage, mRoseImage.getWidth()*2, mRoseImage.getHeight()*2, true);
             }
         }
 
@@ -589,113 +227,14 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             setState(STATE_RUNNING);
         }
 
-        /**
-         * Handles a key-down event.
-         * 
-         * @param keyCode the key that was pressed
-         * @param msg the original event object
-         * @return true
-         */
-        boolean doKeyDown(int keyCode, KeyEvent msg) {
-            synchronized (mSurfaceHolder) {
-//                boolean okStart = false;
-//                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) okStart = true;
-//                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) okStart = true;
-//                if (keyCode == KeyEvent.KEYCODE_S) okStart = true;
-//
-//                boolean center = (keyCode == KeyEvent.KEYCODE_DPAD_UP);
-//
-//                if (okStart
-//                        && (mMode == STATE_READY || mMode == STATE_LOSE || mMode == STATE_WIN)) {
-//                    // ready-to-start -> start
-//                    doStart();
-//                    return true;
-//                } else if (mMode == STATE_PAUSE && okStart) {
-//                    // paused -> running
-//                    unpause();
-//                    return true;
-//                } else if (mMode == STATE_RUNNING) {
-//                    // center/space -> fire
-//                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-//                            || keyCode == KeyEvent.KEYCODE_SPACE) {
-//                        setFiring(true);
-//                        return true;
-//                        // left/q -> left
-//                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
-//                            || keyCode == KeyEvent.KEYCODE_Q) {
-//                        mRotating = -1;
-//                        return true;
-//                        // right/w -> right
-//                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
-//                            || keyCode == KeyEvent.KEYCODE_W) {
-//                        mRotating = 1;
-//                        return true;
-//                        // up -> pause
-//                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-//                        pause();
-//                        return true;
-//                    }
-//                }
-//
-                return false;
-            }
-        }
-
-        /**
-         * Handles a key-up event.
-         * 
-         * @param keyCode the key that was pressed
-         * @param msg the original event object
-         * @return true if the key was handled and consumed, or else false
-         */
-        boolean doKeyUp(int keyCode, KeyEvent msg) {
-            boolean handled = false;
-//
-//            synchronized (mSurfaceHolder) {
-//                if (mMode == STATE_RUNNING) {
-//                    if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER
-//                            || keyCode == KeyEvent.KEYCODE_SPACE) {
-//                        setFiring(false);
-//                        handled = true;
-//                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
-//                            || keyCode == KeyEvent.KEYCODE_Q
-//                            || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
-//                            || keyCode == KeyEvent.KEYCODE_W) {
-//                        mRotating = 0;
-//                        handled = true;
-//                    }
-//                }
-//            }
-
-            return handled;
-        }
 
         /**
          * Draws the ship, fuel/speed bars, and background to the provided
          * Canvas.
          */
         private void doDraw(Canvas canvas) {
-            // Draw the background image. Operations on the Canvas accumulate
-            // so this is like clearing the screen.
 
-        	//if (mLastCompassAngle <  mCompassAngle + 5 &&
-        	//		mLastCompassAngle > mCompassAngle - 5){
-        	//	return;
-        	//}
-        	//mLastCompassAngle = mCompassAngle;
-        	
-        	
-            //int yTop = mCanvasHeight - ((int) mY + mLanderHeight / 2);
-            //int xLeft = (int) mX - mLanderWidth / 2;
-
-        	
-        	
-        	
-        	
-        	
-            canvas.drawBitmap(mBackgroundImage, 0, 0, null);
-            
-
+        	canvas.drawBitmap(mBackgroundImage, 0, 0, null);
             
             int height = canvas.getHeight();
             int width = canvas.getWidth();
@@ -703,7 +242,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             float cx = width/2;
             float cy = height/2 + 46;
             
-
+            
             float rx = cx - (mRoseImage.getWidth()/2);
             float ry = cy - (mRoseImage.getHeight()/2);
             
@@ -717,6 +256,19 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             paint2.setColor(Color.MAGENTA);
             canvas.drawCircle(x2, y2, 5, paint2);
 
+            //draw ring around compass
+            Paint p = new Paint();
+            p.setARGB(50, 0, 0, 0);
+            canvas.drawCircle(cx, cy, rad + 10, p);
+            
+            //draw bearing lines
+            canvas.drawLine(cx, cy, cx - rad - 10, cy, mTextPaintSmall);
+            canvas.drawLine(cx, cy, cx + rad + 10, cy, mTextPaintSmall);
+            canvas.drawLine(cx, cy, cx, cy - rad - 30, mTextPaintSmall);
+            canvas.drawLine(cx, cy, cx, cy + rad + 10, mTextPaintSmall);
+            //arrow
+            canvas.drawLine(cx, cy-rad-30, cx-7, cy-rad-23, mTextPaintSmall);
+            canvas.drawLine(cx, cy-rad-30, cx+7, cy-rad-23, mTextPaintSmall);
             
             canvas.save();
             canvas.rotate(-mAzimuth,cx, cy);
@@ -726,73 +278,19 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             mCanvas = canvas;
             printDirection();
             
-            
-//            // Draw the fuel gauge
-//            int fuelWidth = (int) (UI_BAR * mFuel / PHYS_FUEL_MAX);
-//            mScratchRect.set(4, 4, 4 + fuelWidth, 4 + UI_BAR_HEIGHT);
-//            canvas.drawRect(mScratchRect, mLinePaint);
-//
-//            // Draw the speed gauge, with a two-tone effect
-//            double speed = Math.sqrt(mDX * mDX + mDY * mDY);
-//            int speedWidth = (int) (UI_BAR * speed / PHYS_SPEED_MAX);
-//
-//            if (speed <= mGoalSpeed) {
-//                mScratchRect.set(4 + UI_BAR + 4, 4,
-//                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
-//                canvas.drawRect(mScratchRect, mLinePaint);
-//            } else {
-//                // Draw the bad color in back, with the good color in front of
-//                // it
-//                mScratchRect.set(4 + UI_BAR + 4, 4,
-//                        4 + UI_BAR + 4 + speedWidth, 4 + UI_BAR_HEIGHT);
-//                canvas.drawRect(mScratchRect, mLinePaintBad);
-//                int goalWidth = (UI_BAR * mGoalSpeed / PHYS_SPEED_MAX);
-//                mScratchRect.set(4 + UI_BAR + 4, 4, 4 + UI_BAR + 4 + goalWidth,
-//                        4 + UI_BAR_HEIGHT);
-//                canvas.drawRect(mScratchRect, mLinePaint);
-//            }
-//
-//            // Draw the landing pad
-//            canvas.drawLine(mGoalX, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
-//                    mGoalX + mGoalWidth, 1 + mCanvasHeight - TARGET_PAD_HEIGHT,
-//                    mLinePaint);
-//
-//
-//            // Draw the ship with its current rotation
-//            canvas.save();
-//            canvas.rotate((float) mHeading, (float) mX, mCanvasHeight
-//                    - (float) mY);
-//            if (mMode == STATE_LOSE) {
-//                mCrashedImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-//                        + mLanderHeight);
-//                mCrashedImage.draw(canvas);
-//            } else if (mEngineFiring) {
-//                mFiringImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-//                        + mLanderHeight);
-//                mFiringImage.draw(canvas);
-//            } else {
-//                mLanderImage.setBounds(xLeft, yTop, xLeft + mLanderWidth, yTop
-//                        + mLanderHeight);
-//                mLanderImage.draw(canvas);
-//            }
-//            canvas.restore();
         }
 
-        /**
-         * Figures the lander state (x, y, fuel, ...) based on the passage of
-         * realtime. Does not invalidate(). Called at the start of draw().
-         * Detects the end-of-game and sets the UI to the next state.
-         */
         private void updatePhysics() {
             long now = System.currentTimeMillis();
 
             // Do nothing if mLastTime is in the future.
             // This allows the game-start to delay the start of the physics
             // by 100ms or whatever.
-            if (mLastTime > now) return;
+            if (mLastTime > now) 
+            	return;
 
             mLastTime = now;
-                    doStart();
+            doStart();
         }
       
         
@@ -822,9 +320,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 	      mCanvas.drawRoundRect(mTextBoxRect, 10f, 10f, mTextBoxPaint);
 	      mCanvas.drawText(out, 15, 40, mTextPaintLargeBold);
 	      
-
-	      
-	      
 	      
 	      //draw text stats
 	      out = String.format("Azimuth:    %.2f", mAzimuth);
@@ -840,15 +335,10 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     
     
     
-
-    /** Handle to the application context, used to e.g. fetch Drawables. */
+    private CompassThread thread;
     private Context mContext;
 
-    /** Pointer to the text view to display "Paused.." etc. */
-    private TextView mStatusText;
-
-    /** The thread that actually draws the animation */
-    private CompassThread thread;
+    
 
     public CompassView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -869,30 +359,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true); // make sure we get key events
     }
 
-    /**
-     * Fetches the animation thread corresponding to this LunarView.
-     * 
-     * @return the animation thread
-     */
     public CompassThread getThread() {
         return thread;
-    }
-
-    /**
-     * Standard override to get key-press events.
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent msg) {
-        return thread.doKeyDown(keyCode, msg);
-    }
-
-    /**
-     * Standard override for key-up. We actually care about these, so we can
-     * turn off the engine or stop rotating.
-     */
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent msg) {
-        return thread.doKeyUp(keyCode, msg);
     }
 
     /**
@@ -943,8 +411,9 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             try {
                 thread.join();
                 retry = false;
-            } catch (InterruptedException e) {
+            } 
+            catch (InterruptedException e) {
             }
         }
     }
-}
+}//End of CompassView

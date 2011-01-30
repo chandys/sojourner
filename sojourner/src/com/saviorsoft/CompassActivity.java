@@ -66,6 +66,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
     @Override
     protected void onResume() {
       super.onResume();
+      mCompassThread.unpause();
       sensorManager.registerListener(this, 
             sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
             SensorManager.SENSOR_DELAY_NORMAL);
@@ -75,6 +76,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
     @Override
     protected void onPause() {
       super.onPause();
+      mCompassThread.pause();
       sensorManager.unregisterListener(this);
     }
     
@@ -90,15 +92,9 @@ public class CompassActivity extends Activity implements SensorEventListener {
            myPitch = Math.round(event.values[1]);
            myRoll = Math.round(event.values[2]);
 
-           //String out = String.format("Azimuth: %.2f\n\nPitch:%.2f\n\nRoll:%.2f\n\n", 
-           //      myAzimuth, myPitch, myRoll);
-           //txtRawData.setText(out);
-
            mCompassThread.setAzimuth(myAzimuth);
            mCompassThread.setPitch(myPitch);
            mCompassThread.setRoll(myRoll);
-           
-           //printDirection();
    }
    
 
