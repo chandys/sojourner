@@ -1,11 +1,11 @@
 package com.saviorsoft;
 
 
-import com.saviorsoft.CompassView.CompassThread;
+//import com.saviorsoft.CompassView.CompassThread;
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
+//import android.util.Log;
+//import android.widget.TextView;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,13 +15,13 @@ public class CompassActivity extends Activity implements SensorEventListener {
     /** Called when the activity is first created. */
    
    private SensorManager sensorManager;
-   private TextView txtRawData;
-   private TextView txtDirection;
+//   private TextView txtRawData;
+//   private TextView txtDirection;
    private float myAzimuth = 0;
    private float myPitch = 0;
    private float myRoll = 0;
    private CompassView mCompassView;
-   private CompassThread mCompassThread;
+//   private CompassThread mCompassThread;
 
 
    
@@ -32,28 +32,28 @@ public class CompassActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.compassview);
         
    
-        txtRawData = (TextView) findViewById(R.id.txt_info);
-        txtDirection = (TextView) findViewById(R.id.txt_direction);
-        txtRawData.setText("Compass");
-        txtDirection.setText("");
+//        txtRawData = (TextView) findViewById(R.id.txt_info);
+//        txtDirection = (TextView) findViewById(R.id.txt_direction);
+//        txtRawData.setText("Compass");
+//        txtDirection.setText("");
         
         
         
         // get handles to the LunarView from XML, and its LunarThread
         mCompassView = (CompassView) findViewById(R.id.compsurface);
-        mCompassThread = mCompassView.getThread();
+        //mCompassThread = mCompassView.getThread();
 
         // give the LunarView a handle to the TextView used for messages
-        mCompassView.setTextView((TextView) findViewById(R.id.text));
+//        mCompassView.setTextView((TextView) findViewById(R.id.text));
 
         if (savedInstanceState == null) {
             // we were just launched: set up a new game
-            mCompassThread.setState(CompassThread.STATE_READY);
-            Log.w(this.getClass().getName(), "SIS is null");
+//            mCompassThread.setState(CompassThread.STATE_READY);
+//            Log.w(this.getClass().getName(), "SIS is null");
         } else {
             // we are being restored: resume a previous game
-            mCompassThread.restoreState(savedInstanceState);
-            Log.w(this.getClass().getName(), "SIS is nonnull");
+            mCompassView.getThread().restoreState(savedInstanceState);
+//            Log.w(this.getClass().getName(), "SIS is nonnull");
         }
 
         // Real sensor manager
@@ -66,7 +66,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
     @Override
     protected void onResume() {
       super.onResume();
-      mCompassThread.unpause();
+//      mCompassThread.unpause();
       sensorManager.registerListener(this, 
             sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
             SensorManager.SENSOR_DELAY_NORMAL);
@@ -76,7 +76,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
     @Override
     protected void onPause() {
       super.onPause();
-      mCompassThread.pause();
+//      mCompassThread.pause();
       sensorManager.unregisterListener(this);
     }
     
@@ -92,9 +92,9 @@ public class CompassActivity extends Activity implements SensorEventListener {
            myPitch = Math.round(event.values[1]);
            myRoll = Math.round(event.values[2]);
 
-           mCompassThread.setAzimuth(myAzimuth);
-           mCompassThread.setPitch(myPitch);
-           mCompassThread.setRoll(myRoll);
+           mCompassView.mAzimuth = myAzimuth;
+           mCompassView.mPitch = myPitch;
+           mCompassView.mRoll = myRoll;
    }
    
 
