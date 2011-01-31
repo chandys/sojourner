@@ -22,41 +22,22 @@ import android.widget.TextView;
 
 class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     class CompassThread extends Thread {
-		private float mLastCompassAngle = 0;
-        private float mWayPointAngle = 240;
-        private float mWayPointDistance = 123;
-        private float mAzimuth = 0;
-        private float mPitch = 0;
-        private float mRoll = 0;
+    	public int threadDelay = 100;
         private Paint mTextPaintLargeBold = new Paint();
         private Paint mTextPaintSmall = new Paint();
         private Canvas mCanvas;
         private RectF mTextBoxRect;
         private Paint mTextBoxPaint;
 
-		public void setRoll(float mRoll) {
-			this.mRoll = mRoll;
-		}
 
-		public void setPitch(float mPitch) {
-			this.mPitch = mPitch;
-		}
-
-		public void setAzimuth(float mAzimuth) {
-			this.mAzimuth = mAzimuth;
-		}
-
-        public void setmWayPointAngle(float mWayPointAngle) {
-			this.mWayPointAngle = mWayPointAngle;
-		}
 
         
 
         private Bitmap mBackgroundImage;
         private Bitmap mRoseImage;
         private Handler mHandler;
-        private long mLastTime;
-        private int mMode;
+//        private long mLastTime;
+//        private int mMode;
         private boolean mRun = false;
         private SurfaceHolder mSurfaceHolder;
         private int mCanvasHeight = 1;
@@ -65,11 +46,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         /*
          * State-tracking constants
          */
-        public static final int STATE_LOSE = 1;
-        public static final int STATE_PAUSE = 2;
-        public static final int STATE_READY = 3;
-        public static final int STATE_RUNNING = 4;
-        public static final int STATE_WIN = 5;
 		private static final String KEY_WAYPOINTANGLE = "0";
 		private static final String KEY_WAYPOINTDISTANCE = "0";
 
@@ -106,23 +82,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
 
-		public void doStart() {
-            synchronized (mSurfaceHolder) {
-                mLastTime = System.currentTimeMillis() + 100;
-                setState(STATE_RUNNING);
-            }
-        }
-
-        /**
-         * Pauses the physics update & animation.
-         */
-        public void pause() {
-            synchronized (mSurfaceHolder) {
-                if (mMode == STATE_RUNNING) 
-                	setState(STATE_PAUSE);
-            }
-        }
-
         /**
          * Restores state from the indicated Bundle. Typically called when
          * the Activity is being restored after having been previously
@@ -132,8 +91,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          */
         public synchronized void restoreState(Bundle savedState) {
             synchronized (mSurfaceHolder) {
-                setState(STATE_PAUSE);
-
                 mWayPointAngle = savedState.getFloat(KEY_WAYPOINTANGLE);
                 mWayPointAngle = savedState.getFloat(KEY_WAYPOINTDISTANCE);
             }
@@ -147,8 +104,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                 try {
                     c = mSurfaceHolder.lockCanvas(null);
                     synchronized (mSurfaceHolder) {
-                        if (mMode == STATE_RUNNING) 
-                        	updatePhysics();
                         doDraw(c);
                     }
                 } finally {
@@ -157,6 +112,11 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                     // inconsistent state
                     if (c != null) {
                         mSurfaceHolder.unlockCanvasAndPost(c);
+                        try {
+							sleep(threadDelay);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
                     }
                 }                
             }
@@ -191,18 +151,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
 
-        public void setState(int mode) {
-            synchronized (mSurfaceHolder) {
-                setState(mode, null);
-            }
-        }
-
-        public void setState(int mode, CharSequence message) {
-            synchronized (mSurfaceHolder) {
-                mMode = mode;
-            }
-        }
-
         /* Callback invoked when the surface dimensions change. */
         public void setSurfaceSize(int width, int height) {
             // synchronized to make sure these all change atomically
@@ -214,17 +162,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                 mBackgroundImage = mBackgroundImage.createScaledBitmap(
                         mBackgroundImage, width, height, true);
             }
-        }
-
-        /**
-         * Resumes from a pause.
-         */
-        public void unpause() {
-            // Move the real time clock up to now
-            synchronized (mSurfaceHolder) {
-                mLastTime = System.currentTimeMillis() + 100;
-            }
-            setState(STATE_RUNNING);
         }
 
 
@@ -280,19 +217,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             
         }
 
-        private void updatePhysics() {
-            long now = System.currentTimeMillis();
-
-            // Do nothing if mLastTime is in the future.
-            // This allows the game-start to delay the start of the physics
-            // by 100ms or whatever.
-            if (mLastTime > now) 
-            	return;
-
-            mLastTime = now;
-            doStart();
-        }
-      
         
 	   private void printDirection() {
 	      String out = new String("");
@@ -330,32 +254,40 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 	      mCanvas.drawText(out, 15, 100, mTextPaintSmall);	      
 	   }
 
+	   public void threadShutdown(){
+	        boolean retry = true;
+	        setRunning(false);
+	        while (retry) {
+	            try {
+	                thread.join();
+	                retry = false;
+	            } 
+	            catch (InterruptedException e) {
+	            }
+	        }
+	   }
         
     }//end of compass thread
     
     
-    
+    //$$$$$$$$$$$$$$$$$$$$$$$$$ start of CompassView $$$$$$$$$$$$$$$$$$$
+    public float mLastCompassAngle = 0;
+    public float mWayPointAngle = 240;
+    public float mWayPointDistance = 123;
+    public float mAzimuth = 0;
+    public float mPitch = 0;
+    public float mRoll = 0;
     private CompassThread thread;
     private Context mContext;
 
     
-
     public CompassView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         // register our interest in hearing about changes to our surface
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
-
-        // create thread only; it's started in surfaceCreated()
-        thread = new CompassThread(holder, context, new Handler() {
-            @Override
-            public void handleMessage(Message m) {
-                //mStatusText.setVisibility(m.getData().getInt("viz"));
-                //mStatusText.setText(m.getData().getString("text"));
-            }
-        });
-
+        mContext = context;
         setFocusable(true); // make sure we get key events
     }
 
@@ -369,14 +301,25 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
      */
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
-        if (!hasWindowFocus) thread.pause();
-    }
-
-    /**
-     * Installs a pointer to the text view used for messages.
-     */
-    public void setTextView(TextView textView) {
-        //mStatusText = textView;
+//        if (!hasWindowFocus){
+//        	if(thread != null){
+//        		thread.threadShutdown();
+//        		thread = null;
+//        	}
+//        }
+//        else{
+//        	if(thread == null){
+//                thread = new CompassThread(getHolder(), mContext, new Handler() {
+//                    @Override
+//                    public void handleMessage(Message m) {
+//                        //mStatusText.setVisibility(m.getData().getInt("viz"));
+//                        //mStatusText.setText(m.getData().getString("text"));
+//                    }
+//                });
+//        		thread.setRunning(true);
+//        		thread.start(); 
+//        	}
+//        }
     }
 
     /* Callback invoked when the surface dimensions change. */
@@ -390,30 +333,30 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
      * used.
      */
     public void surfaceCreated(SurfaceHolder holder) {
-        // start the thread here so that we don't busy-wait in run()
-        // waiting for the surface to be created
-        thread.setRunning(true);
-        thread.start();
-        thread.doStart();
+    	if(thread == null){
+            thread = new CompassThread(holder, mContext, new Handler() {
+                @Override
+                public void handleMessage(Message m) {
+                    //mStatusText.setVisibility(m.getData().getInt("viz"));
+                    //mStatusText.setText(m.getData().getString("text"));
+                }
+            });
+            thread.setRunning(true);
+            thread.start();
+    	}
+        
     }
 
+    
     /*
      * Callback invoked when the Surface has been destroyed and must no longer
      * be touched. WARNING: after this method returns, the Surface/Canvas must
      * never be touched again!
      */
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // we have to tell thread to shut down & wait for it to finish, or else
-        // it might touch the Surface after we return and explode
-        boolean retry = true;
-        thread.setRunning(false);
-        while (retry) {
-            try {
-                thread.join();
-                retry = false;
-            } 
-            catch (InterruptedException e) {
-            }
-        }
+    	if(thread != null){
+    		thread.threadShutdown();
+    		thread = null;
+    	}
     }
 }//End of CompassView
