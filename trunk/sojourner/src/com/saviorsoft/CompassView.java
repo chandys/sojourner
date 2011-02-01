@@ -17,7 +17,6 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.TextView;
 
 
 class CompassView extends SurfaceView implements SurfaceHolder.Callback {
@@ -25,16 +24,19 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     	public int threadDelay = 100;
         private Paint mTextPaintLargeBold = new Paint();
         private Paint mTextPaintSmall = new Paint();
+        private Paint mMagentaPaint = new Paint();
         private Canvas mCanvas;
         private RectF mTextBoxRect;
         private Paint mTextBoxPaint;
-
+        private String mTextString = new String();
+        private Bitmap mCompBackground;
 
 
         
 
         private Bitmap mBackgroundImage;
         private Bitmap mRoseImage;
+        private Bitmap mTicsImage;
         private Handler mHandler;
 //        private long mLastTime;
 //        private int mMode;
@@ -63,6 +65,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                   R.drawable.stainless);
             mRoseImage = BitmapFactory.decodeResource(res,
                     R.drawable.compass_rose_browns);
+            mTicsImage = BitmapFactory.decodeResource(mContext.getResources(),
+                    R.drawable.modern_nautical_compass_rose);
             
             //text color and size
             mTextPaintSmall.setTextSize(12);
@@ -79,6 +83,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             mTextBoxPaint.setColor(Color.GREEN);
             mTextBoxPaint.setAlpha(100);
 
+            mMagentaPaint.setAlpha(100);
+            mMagentaPaint.setColor(Color.MAGENTA);
         }
 
 
@@ -99,14 +105,14 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         @Override
         public void run() {
             while (mRun) {
-            //while (true) {
                 Canvas c = null;
                 try {
                     c = mSurfaceHolder.lockCanvas(null);
                     synchronized (mSurfaceHolder) {
-                        doDraw(c);
+                		doDraw(c);
                     }
-                } finally {
+                }
+                finally {
                     // do this in a finally so that if an exception is thrown
                     // during the above, we don't leave the Surface in an
                     // inconsistent state
@@ -114,7 +120,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                         mSurfaceHolder.unlockCanvasAndPost(c);
                         try {
 							sleep(threadDelay);
-						} catch (InterruptedException e) {
+						} 
+                        catch (InterruptedException e) {
 							e.printStackTrace();
 						}
                     }
@@ -161,6 +168,56 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                 // don't forget to resize the background image
                 mBackgroundImage = mBackgroundImage.createScaledBitmap(
                         mBackgroundImage, width, height, true);
+                
+//                //get the right size
+//                Canvas canvas = new Canvas();
+//                mCompBackground = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), 
+//                		Bitmap.Config.ARGB_8888); 
+//                canvas.setBitmap(mCompBackground); 
+//                //my  bitmap to save to
+//                //canvas.setBitmap(mCompBackground);
+//
+//                canvas.drawBitmap(mBackgroundImage, width, height, null);
+//                
+//                //int height = canvas.getHeight();
+//                //int width = canvas.getWidth();
+//                
+//                float cx = width/2;
+//                float cy = height/2 + 46;
+//                
+//                
+//                float rx = cx - (mRoseImage.getWidth()/2);
+//                float ry = cy - (mRoseImage.getHeight()/2);
+//                
+//                int rad = (mRoseImage.getWidth()/2) + 10;
+//
+//                
+//                float x2 = (float) (cx - (rad * Math.sin(Math.toRadians(mAzimuth))));
+//                float y2 = (float) (cy - (rad * Math.cos(Math.toRadians(mAzimuth))));
+//                canvas.drawCircle(x2, y2, 5, mMagentaPaint);
+//
+//                //draw ring around compass
+//                Paint p = new Paint();
+//                p.setARGB(50, 0, 0, 0);
+//                canvas.drawCircle(cx, cy, rad + 10, p);
+//                
+//                //draw bearing lines
+//                canvas.drawLine(cx, cy, cx - rad - 10, cy, mTextPaintSmall);
+//                canvas.drawLine(cx, cy, cx + rad + 10, cy, mTextPaintSmall);
+//                canvas.drawLine(cx, cy, cx, cy - rad - 30, mTextPaintSmall);
+//                canvas.drawLine(cx, cy, cx, cy + rad + 10, mTextPaintSmall);
+//                //arrow
+//                canvas.drawLine(cx, cy-rad-30, cx-7, cy-rad-23, mTextPaintSmall);
+//                canvas.drawLine(cx, cy-rad-30, cx+7, cy-rad-23, mTextPaintSmall);
+//
+//                
+//                float tx = cx - (mTicsImage.getWidth()/2);
+//                float ty = cy - (mTicsImage.getHeight()/2);
+//                canvas.drawBitmap(mTicsImage, tx, ty, null);
+//
+//               
+//                //mCompBackground = Bitmap.createBitmap(canvas);
+//                //mCompBackground = mCanvas.new Bitmap();
             }
         }
 
@@ -170,11 +227,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          * Canvas.
          */
         private void doDraw(Canvas canvas) {
-
+//        	canvas.drawBitmap(mCompBackground, 0, 0, null);
         	canvas.drawBitmap(mBackgroundImage, 0, 0, null);
             
             int height = canvas.getHeight();
             int width = canvas.getWidth();
+//        	canvas.drawBitmap(mCompBackground, width, height, null);
             
             float cx = width/2;
             float cy = height/2 + 46;
@@ -186,12 +244,9 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             int rad = (mRoseImage.getWidth()/2) + 10;
 
             
-            float x2 = (float) (cx - (rad * Math.sin(Math.toRadians(mAzimuth))));
-            float y2 = (float) (cy - (rad * Math.cos(Math.toRadians(mAzimuth))));
-            Paint paint2 = new Paint();
-            paint2.setAlpha(100);
-            paint2.setColor(Color.MAGENTA);
-            canvas.drawCircle(x2, y2, 5, paint2);
+            float x2 = (float) (cx - ((rad+15) * Math.sin(Math.toRadians(mAzimuth))));
+            float y2 = (float) (cy - ((rad+15) * Math.cos(Math.toRadians(mAzimuth))));
+            canvas.drawCircle(x2, y2, 5, mMagentaPaint);
 
             //draw ring around compass
             Paint p = new Paint();
@@ -206,6 +261,13 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             //arrow
             canvas.drawLine(cx, cy-rad-30, cx-7, cy-rad-23, mTextPaintSmall);
             canvas.drawLine(cx, cy-rad-30, cx+7, cy-rad-23, mTextPaintSmall);
+
+            
+            float tx = cx - (mTicsImage.getWidth()/2);
+            float ty = cy - (mTicsImage.getHeight()/2);
+            canvas.drawBitmap(mTicsImage, tx, ty, null);
+
+
             
             canvas.save();
             canvas.rotate(-mAzimuth,cx, cy);
@@ -221,39 +283,40 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 	   private void printDirection() {
 	      String out = new String("");
 	      if (mAzimuth < 22)
-	         out = "N";
+	         mTextString = "N";
 	      else if (mAzimuth >= 22 && mAzimuth < 67)
-	    	 out = "NE";
+	    	  mTextString = "NE";
 	      else if (mAzimuth >= 67 && mAzimuth < 112)
-	    	 out = "E";
+	    	  mTextString = "E";
 	      else if (mAzimuth >= 112 && mAzimuth < 157)
-	    	 out = "SE";
+	    	  mTextString = "SE";
 	      else if (mAzimuth >= 157 && mAzimuth < 202)
-	    	 out = "S";
+	    	  mTextString = "S";
 	      else if (mAzimuth >= 202 && mAzimuth < 247)
-	    	 out = "SW";
+	    	  mTextString = "SW";
 	      else if (mAzimuth >= 247 && mAzimuth < 292)
-	    	 out = "W";
+	    	  mTextString = "W";
 	      else if (mAzimuth >= 292 && mAzimuth < 337)
-	    	 out = "NW";
+	    	  mTextString = "NW";
 	      else if (mAzimuth >= 337)
-	    	 out = "N";
+	    	  mTextString = "N";
 	      else
-	       	 out = "";
+	    	  mTextString = "";
 
 	      mCanvas.drawRoundRect(mTextBoxRect, 10f, 10f, mTextBoxPaint);
-	      mCanvas.drawText(out, 15, 40, mTextPaintLargeBold);
+	      mCanvas.drawText(mTextString, 15, 40, mTextPaintLargeBold);
 	      
 	      
 	      //draw text stats
-	      out = String.format("Azimuth:    %.2f", mAzimuth);
-	      mCanvas.drawText(out, 15, 60, mTextPaintSmall);
-	      out = String.format("Pitch:    %.2f", mPitch, mRoll);
-	      mCanvas.drawText(out, 15, 80, mTextPaintSmall);
-	      out = String.format("Roll:    %.2f", mRoll);
-	      mCanvas.drawText(out, 15, 100, mTextPaintSmall);	      
+	      mTextString = String.format("Azimuth:    %.2f", mAzimuth);
+	      mCanvas.drawText(mTextString, 15, 60, mTextPaintSmall);
+	      mTextString = String.format("Pitch:    %.2f", mPitch, mRoll);
+	      mCanvas.drawText(mTextString, 15, 80, mTextPaintSmall);
+	      mTextString = String.format("Roll:    %.2f", mRoll);
+	      mCanvas.drawText(mTextString, 15, 100, mTextPaintSmall);	      
 	   }
 
+	   
 	   public void threadShutdown(){
 	        boolean retry = true;
 	        setRunning(false);
