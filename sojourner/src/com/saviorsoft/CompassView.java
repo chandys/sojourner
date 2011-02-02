@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -26,11 +27,12 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         private Paint mTextPaintSmall = new Paint();
         private Paint mMagentaPaint = new Paint();
         private Canvas mCanvas;
-        private RectF mTextBoxRect;
-        private Paint mTextBoxPaint;
+        private RectF mDirectionBoxRect;
+        private Paint mDirectionBoxPaint;
         private String mTextString = new String();
         private Bitmap mCompBackground;
-
+        private RectF mWaypointBoxRect;
+        private Paint mWaypointBoxPaint;
 
         
 
@@ -38,8 +40,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         private Bitmap mRoseImage;
         private Bitmap mTicsImage;
         private Handler mHandler;
-//        private long mLastTime;
-//        private int mMode;
         private boolean mRun = false;
         private SurfaceHolder mSurfaceHolder;
         private int mCanvasHeight = 1;
@@ -63,28 +63,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             Resources res = context.getResources();
             mBackgroundImage = BitmapFactory.decodeResource(res,
                   R.drawable.stainless);
-            mRoseImage = BitmapFactory.decodeResource(res,
-                    R.drawable.compass_rose_browns);
-            mTicsImage = BitmapFactory.decodeResource(mContext.getResources(),
-                    R.drawable.modern_nautical_compass_rose);
-            
-            //text color and size
-            mTextPaintSmall.setTextSize(12);
-            mTextPaintSmall.setColor(Color.BLACK);
-            mTextPaintSmall.setAntiAlias(true);
-
-            mTextPaintLargeBold.setTextSize(24);
-            mTextPaintLargeBold.setColor(Color.BLACK);
-            mTextPaintLargeBold.setAntiAlias(true);
-            mTextPaintLargeBold.setTypeface(Typeface.DEFAULT_BOLD);
-            
-            mTextBoxRect = new RectF(5,13, 140, 120);
-            mTextBoxPaint = new Paint();
-            mTextBoxPaint.setColor(Color.GREEN);
-            mTextBoxPaint.setAlpha(100);
-
-            mMagentaPaint.setAlpha(100);
-            mMagentaPaint.setColor(Color.MAGENTA);
         }
 
 
@@ -169,55 +147,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
                 mBackgroundImage = mBackgroundImage.createScaledBitmap(
                         mBackgroundImage, width, height, true);
                 
-//                //get the right size
-//                Canvas canvas = new Canvas();
-//                mCompBackground = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), 
-//                		Bitmap.Config.ARGB_8888); 
-//                canvas.setBitmap(mCompBackground); 
-//                //my  bitmap to save to
-//                //canvas.setBitmap(mCompBackground);
-//
-//                canvas.drawBitmap(mBackgroundImage, width, height, null);
-//                
-//                //int height = canvas.getHeight();
-//                //int width = canvas.getWidth();
-//                
-//                float cx = width/2;
-//                float cy = height/2 + 46;
-//                
-//                
-//                float rx = cx - (mRoseImage.getWidth()/2);
-//                float ry = cy - (mRoseImage.getHeight()/2);
-//                
-//                int rad = (mRoseImage.getWidth()/2) + 10;
-//
-//                
-//                float x2 = (float) (cx - (rad * Math.sin(Math.toRadians(mAzimuth))));
-//                float y2 = (float) (cy - (rad * Math.cos(Math.toRadians(mAzimuth))));
-//                canvas.drawCircle(x2, y2, 5, mMagentaPaint);
-//
-//                //draw ring around compass
-//                Paint p = new Paint();
-//                p.setARGB(50, 0, 0, 0);
-//                canvas.drawCircle(cx, cy, rad + 10, p);
-//                
-//                //draw bearing lines
-//                canvas.drawLine(cx, cy, cx - rad - 10, cy, mTextPaintSmall);
-//                canvas.drawLine(cx, cy, cx + rad + 10, cy, mTextPaintSmall);
-//                canvas.drawLine(cx, cy, cx, cy - rad - 30, mTextPaintSmall);
-//                canvas.drawLine(cx, cy, cx, cy + rad + 10, mTextPaintSmall);
-//                //arrow
-//                canvas.drawLine(cx, cy-rad-30, cx-7, cy-rad-23, mTextPaintSmall);
-//                canvas.drawLine(cx, cy-rad-30, cx+7, cy-rad-23, mTextPaintSmall);
-//
-//                
-//                float tx = cx - (mTicsImage.getWidth()/2);
-//                float ty = cy - (mTicsImage.getHeight()/2);
-//                canvas.drawBitmap(mTicsImage, tx, ty, null);
-//
-//               
-//                //mCompBackground = Bitmap.createBitmap(canvas);
-//                //mCompBackground = mCanvas.new Bitmap();
+                buildBackground();
+                
             }
         }
 
@@ -227,52 +158,29 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
          * Canvas.
          */
         private void doDraw(Canvas canvas) {
-//        	canvas.drawBitmap(mCompBackground, 0, 0, null);
-        	canvas.drawBitmap(mBackgroundImage, 0, 0, null);
-            
             int height = canvas.getHeight();
             int width = canvas.getWidth();
-//        	canvas.drawBitmap(mCompBackground, width, height, null);
+            
+            canvas.drawBitmap(mCompBackground, 0, 0, null);
             
             float cx = width/2;
             float cy = height/2 + 46;
-            
-            
             float rx = cx - (mRoseImage.getWidth()/2);
             float ry = cy - (mRoseImage.getHeight()/2);
-            
+
+            //draw waypoint 
+            float transpoint = mAzimuth-mWayPointAngle;
             int rad = (mRoseImage.getWidth()/2) + 10;
-
-            
-            float x2 = (float) (cx - ((rad+15) * Math.sin(Math.toRadians(mAzimuth))));
-            float y2 = (float) (cy - ((rad+15) * Math.cos(Math.toRadians(mAzimuth))));
+            float x2 = (float) (cx - ((rad+15) * Math.sin(Math.toRadians(transpoint))));
+            float y2 = (float) (cy - ((rad+15) * Math.cos(Math.toRadians(transpoint))));
             canvas.drawCircle(x2, y2, 5, mMagentaPaint);
-
-            //draw ring around compass
-            Paint p = new Paint();
-            p.setARGB(50, 0, 0, 0);
-            canvas.drawCircle(cx, cy, rad + 10, p);
-            
-            //draw bearing lines
-            canvas.drawLine(cx, cy, cx - rad - 10, cy, mTextPaintSmall);
-            canvas.drawLine(cx, cy, cx + rad + 10, cy, mTextPaintSmall);
-            canvas.drawLine(cx, cy, cx, cy - rad - 30, mTextPaintSmall);
-            canvas.drawLine(cx, cy, cx, cy + rad + 10, mTextPaintSmall);
-            //arrow
-            canvas.drawLine(cx, cy-rad-30, cx-7, cy-rad-23, mTextPaintSmall);
-            canvas.drawLine(cx, cy-rad-30, cx+7, cy-rad-23, mTextPaintSmall);
-
-            
-            float tx = cx - (mTicsImage.getWidth()/2);
-            float ty = cy - (mTicsImage.getHeight()/2);
-            canvas.drawBitmap(mTicsImage, tx, ty, null);
-
 
             
             canvas.save();
             canvas.rotate(-mAzimuth,cx, cy);
             canvas.drawBitmap(mRoseImage, rx, ry, null);
             canvas.restore();
+            
             
             mCanvas = canvas;
             printDirection();
@@ -281,7 +189,6 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 
         
 	   private void printDirection() {
-	      String out = new String("");
 	      if (mAzimuth < 22)
 	         mTextString = "N";
 	      else if (mAzimuth >= 22 && mAzimuth < 67)
@@ -303,10 +210,9 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 	      else
 	    	  mTextString = "";
 
-	      mCanvas.drawRoundRect(mTextBoxRect, 10f, 10f, mTextBoxPaint);
+	      //mCanvas.drawRoundRect(mDirectionBoxRect, 10f, 10f, mDirectionBoxPaint);
 	      mCanvas.drawText(mTextString, 15, 40, mTextPaintLargeBold);
-	      
-	      
+	      	      
 	      //draw text stats
 	      mTextString = String.format("Azimuth:    %.2f", mAzimuth);
 	      mCanvas.drawText(mTextString, 15, 60, mTextPaintSmall);
@@ -314,6 +220,99 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 	      mCanvas.drawText(mTextString, 15, 80, mTextPaintSmall);
 	      mTextString = String.format("Roll:    %.2f", mRoll);
 	      mCanvas.drawText(mTextString, 15, 100, mTextPaintSmall);	      
+
+	      //waypoint box
+	      //mCanvas.drawRoundRect(mWaypointBoxRect, 10f, 10f, mWaypointBoxPaint);
+	      mCanvas.drawText("Waypoint", mWaypointBoxRect.left+10, 
+	    		  mWaypointBoxRect.top+27, mTextPaintLargeBold);
+	      	      
+	      //draw text stats
+	      mTextString = String.format("Direction:    %.2f", mWayPointAngle);
+	      mCanvas.drawText(mTextString, mWaypointBoxRect.left+10, 
+	    		  mWaypointBoxRect.top+47, mTextPaintSmall);
+	      mTextString = String.format("Distance:    %.2f ft.", mWayPointDistance);
+	      mCanvas.drawText(mTextString, mWaypointBoxRect.left+10, 
+	    		  mWaypointBoxRect.top+67, mTextPaintSmall);
+	   }
+	   
+	   
+	   private void buildBackground()
+	   {
+           mCompBackground = Bitmap.createBitmap(mBackgroundImage);
+           Canvas c = new Canvas(mCompBackground);
+
+           int height = mCanvasHeight;
+           int width = mCanvasWidth;
+           
+           
+           //initial drawing items
+           mRoseImage = BitmapFactory.decodeResource(getResources(),
+                   R.drawable.compass_rose_browns);
+           mTicsImage = BitmapFactory.decodeResource(getResources(),
+                   R.drawable.modern_nautical_compass_rose);
+           
+           //text color and size
+           mTextPaintSmall.setTextSize(12);
+           mTextPaintSmall.setColor(Color.BLACK);
+           mTextPaintSmall.setAntiAlias(true);
+           mTextPaintSmall.setStrokeWidth(2);
+
+           mTextPaintLargeBold.setTextSize(24);
+           mTextPaintLargeBold.setColor(Color.BLACK);
+           mTextPaintLargeBold.setAntiAlias(true);
+           mTextPaintLargeBold.setTypeface(Typeface.DEFAULT_BOLD);
+           
+           Paint mWhitePaint = new Paint();
+           mWhitePaint.setColor(Color.WHITE);
+           mWhitePaint.setStyle(Style.FILL);
+           
+           //bearrings box
+           mDirectionBoxRect = new RectF(5, 13, 140, 120);
+           mDirectionBoxPaint = new Paint();
+           mDirectionBoxPaint.setColor(Color.GREEN);
+           mDirectionBoxPaint.setAlpha(100);
+           mDirectionBoxPaint.setStyle(Style.STROKE);
+           mDirectionBoxPaint.setStrokeWidth(4);
+ 	       c.drawRoundRect(mDirectionBoxRect, 10f, 10f, mDirectionBoxPaint);
+ 	       c.drawRoundRect(mDirectionBoxRect, 10f, 10f, mWhitePaint);
+
+           //waypoint box
+           mWaypointBoxRect = new RectF(180, 13, 315, 120);
+           mWaypointBoxPaint = new Paint();
+           mWaypointBoxPaint.setColor(Color.GREEN);
+           mWaypointBoxPaint.setAlpha(100);
+           c.drawRoundRect(mWaypointBoxRect, 10f, 10f, mDirectionBoxPaint);
+ 	       c.drawRoundRect(mWaypointBoxRect, 10f, 10f, mWhitePaint);
+
+           
+           
+           mMagentaPaint.setAlpha(100);
+           mMagentaPaint.setColor(Color.MAGENTA);
+
+           
+           
+           float cx = width/2;
+           float cy = height/2 + 46;
+           
+           int rad = (mRoseImage.getWidth()/2) + 10;
+
+           //draw ring around compass
+           Paint p = new Paint();
+           p.setARGB(50, 0, 0, 0);
+           c.drawCircle(cx, cy, rad + 10, p);
+           
+           //draw bearing lines
+           c.drawLine(cx, cy, cx - rad - 20, cy, mTextPaintSmall);
+           c.drawLine(cx, cy, cx + rad + 20, cy, mTextPaintSmall);
+           c.drawLine(cx, cy, cx, cy - rad - 30, mTextPaintSmall);
+           c.drawLine(cx, cy, cx, cy + rad + 20, mTextPaintSmall);
+           //arrow
+           c.drawLine(cx, cy-rad-30, cx-7, cy-rad-23, mTextPaintSmall);
+           c.drawLine(cx, cy-rad-30, cx+7, cy-rad-23, mTextPaintSmall);
+
+           float tx = cx - (mTicsImage.getWidth()/2);
+           float ty = cy - (mTicsImage.getHeight()/2);
+           c.drawBitmap(mTicsImage, tx, ty, null);
 	   }
 
 	   
@@ -335,7 +334,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
     
     //$$$$$$$$$$$$$$$$$$$$$$$$$ start of CompassView $$$$$$$$$$$$$$$$$$$
     public float mLastCompassAngle = 0;
-    public float mWayPointAngle = 240;
+    public float mWayPointAngle = 90;
     public float mWayPointDistance = 123;
     public float mAzimuth = 0;
     public float mPitch = 0;
