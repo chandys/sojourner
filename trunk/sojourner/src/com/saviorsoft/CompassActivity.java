@@ -82,7 +82,7 @@ public class CompassActivity extends Activity implements SensorEventListener {
     
 
    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-      // TODO Auto-generated method stub
+      //
       
    }
 
@@ -95,6 +95,8 @@ public class CompassActivity extends Activity implements SensorEventListener {
            mCompassView.mAzimuth = myAzimuth;
            mCompassView.mPitch = myPitch;
            mCompassView.mRoll = myRoll;
+           
+           mCompassView.mWayPointAngle = 228;
    }
    
 
