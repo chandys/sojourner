@@ -23,6 +23,7 @@ public final class R {
         public static final int lander_plain=0x7f020009;
         public static final int modern_nautical_compass_rose=0x7f02000a;
         public static final int stainless=0x7f02000b;
+        public static final int stork320x480=0x7f02000c;
     }
     public static final class id {
         public static final int AbsoluteLayout01=0x7f06000c;
