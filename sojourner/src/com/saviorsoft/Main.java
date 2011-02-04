@@ -85,7 +85,7 @@ public class Main extends Activity {
         switch (item.getItemId()) {
         case R.id.itemcompass:
         	Intent i = new Intent();
-        	i.setClass(getApplicationContext(), com.saviorsoft.Compass.class);
+        	i.setClass(getApplicationContext(), com.saviorsoft.CompassActivity.class);
         	startActivity(i);
             return true;
         case R.id.itemsettings:
