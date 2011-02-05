@@ -14,14 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 public class Main extends Activity {
 	
-    static final private int COMPASS_ID = Menu.FIRST;
-    static final private int SETTINGS_ID = Menu.FIRST + 1;
-    static final private int EXIT_ID = Menu.FIRST + 2;
 
     
     public Main(){    	
