@@ -6,6 +6,8 @@ package com.saviorsoft;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Menu;
@@ -17,7 +19,9 @@ import android.widget.Button;
 
 public class Main extends Activity {
 	
+	public static final String PREFS_NAME = "SojounerPrefsFile";
 
+	
     
     public Main(){    	
     }
@@ -27,6 +31,14 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        settings.edit().putString("MyLat", "0");
+        settings.edit().putString("MyLong", "0");
+        settings.edit().putString("WayLat", "1");
+        settings.edit().putString("WayLong", "1");
+        
+        
         
         // Hook up button presses to the appropriate event handler.
         ((Button) findViewById(R.id.ButtonNew)).setOnClickListener(mNewTrackListener);
@@ -127,7 +139,7 @@ public class Main extends Activity {
     OnClickListener mCurrentLocationListener = new OnClickListener() {
         public void onClick(View v) {
         	Intent i = new Intent();
-        	i.setClass(getApplicationContext(), com.saviorsoft.CompassActivity.class);
+        	i.setClass(getApplicationContext(), com.saviorsoft.GpsLocation.class);
         	startActivity(i);
         	//setContentView(R.layout.lunar_layout);
         }
