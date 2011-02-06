@@ -15,20 +15,16 @@ public class CompassActivity extends Activity implements SensorEventListener {
     /** Called when the activity is first created. */
    
    private SensorManager sensorManager;
-//   private TextView txtRawData;
-//   private TextView txtDirection;
    private float myAzimuth = 0;
    private float myPitch = 0;
    private float myRoll = 0;
    private CompassView mCompassView;
-//   private CompassThread mCompassThread;
 
 
    
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
+        super.onCreate(savedInstanceState);        
         setContentView(R.layout.compassview);
         
         // get handles to the LunarView from XML, and its LunarThread

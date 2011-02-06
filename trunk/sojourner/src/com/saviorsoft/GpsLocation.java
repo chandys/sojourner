@@ -29,10 +29,10 @@ public class GpsLocation extends Activity {
 	
 		
 		/* Use the LocationManager class to obtain GPS locations */
-		mLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-		mLocListener = new MyLocationListener();
-		mLocManager.requestLocationUpdates( 
-				LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
+		//mLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+		//mLocListener = new MyLocationListener();
+		//mLocManager.requestLocationUpdates( 
+		//		LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
 		
         // Hook up button presses to the appropriate event handler.
         ((Button) findViewById(R.id.buttonGetLoc)).setOnClickListener(GetLocListener);
@@ -46,8 +46,13 @@ public class GpsLocation extends Activity {
      */
     OnClickListener GetLocListener = new OnClickListener() {
         public void onClick(View v) {
+    		/* Use the LocationManager class to obtain GPS locations */
+    		mLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+    		mLocListener = new MyLocationListener();
+    		mLocManager.requestLocationUpdates( 
+    				LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
         	
-        	Toast.makeText( getApplicationContext(), "Get Gps Location", 
+        	Toast.makeText( getApplicationContext(), "Getting Gps Location ...", 
         			Toast.LENGTH_SHORT ).show();
         }
     };
@@ -58,20 +63,14 @@ public class GpsLocation extends Activity {
      */
     OnClickListener SaveLocListener = new OnClickListener() {
         public void onClick(View v) {
+        	
+        	
         	Toast.makeText( getApplicationContext(), "Save Gps Location", 
         			Toast.LENGTH_SHORT ).show();
         }
     };
 
     
-//	@Override
-//	protected void onPause() {
-//		super.onPause();
-//		mLocManager.removeUpdates(mLocListener);
-//	}
-
-
-
 
 	/* Class My Location Listener */	
 	public class MyLocationListener implements LocationListener	{
@@ -81,6 +80,7 @@ public class GpsLocation extends Activity {
 			SharedPreferences settings = getSharedPreferences(Main.PREFS_NAME, 0);
 			settings.edit().putString("MyLat", String.valueOf(loc.getLatitude()));
 			settings.edit().putString("MyLong", String.valueOf(loc.getLongitude()));
+			settings.edit().putString("MyAtt", String.valueOf(loc.getAltitude()));
 			String Text = "My current location is: " +	"Latitude = " + loc.getLatitude() 
 				+ "  Longitude = " + loc.getLongitude();
 			//loc.getTime();
@@ -89,6 +89,9 @@ public class GpsLocation extends Activity {
 			Toast.makeText( getApplicationContext(), Text, Toast.LENGTH_SHORT).show();
 			TextView t = (TextView) findViewById(R.id.textViewGPS);
 			t.setText(Text);
+			
+			//unregister
+			mLocManager.removeUpdates(mLocListener);
 		}
 		
 		

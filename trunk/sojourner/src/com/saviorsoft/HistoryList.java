@@ -4,6 +4,7 @@ package com.saviorsoft;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class HistoryList extends ListActivity {
@@ -31,15 +33,12 @@ public class HistoryList extends ListActivity {
         
         ListView lv = getListView();
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
-        	
             @Override 
             public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) { 
             	onLongListItemClick(v,pos,id);
             	return true; 
            }
-            }); 
-
-
+        }); 
         
         fillData();
 	}
@@ -71,7 +70,7 @@ public class HistoryList extends ListActivity {
 	
 	private void fillData() {
         // Get all of the notes from the database and create the item list
-        Cursor c = mDbHelper.fetchAllNotes();
+        Cursor c = mDbHelper.fetchAllPoints();
         startManagingCursor(c);
 
         String[] from = new String[] { HistoryDbAdapter.KEY_TITLE };
@@ -80,6 +79,7 @@ public class HistoryList extends ListActivity {
         // Now create an array adapter and set it to display using our row
         SimpleCursorAdapter notes =
             new SimpleCursorAdapter(this, R.layout.history_row, c, from, to);
+        notes.setViewBinder(new MyViewBinder());
         setListAdapter(notes);	
 	}
 
@@ -95,16 +95,18 @@ public class HistoryList extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case INSERT_ID:
-            createNote();
+            createPoint();
             return true;
         }
        
         return super.onOptionsItemSelected(item);
 	}
 
-	private void createNote() {
-        String noteName = "Note " + mNoteNumber++;
-        mDbHelper.createNote(noteName, "");
+	private void createPoint() {
+		SharedPreferences settings = getSharedPreferences(Main.PREFS_NAME, 0);
+        String pointName = "Note " + mNoteNumber++;
+        mDbHelper.createWaypoint(pointName, settings.getString("MyLat", "0"), 
+        		settings.getString("MyLong", "0"), settings.getString("MyAtt", "0"));
         fillData();
 	}
 
@@ -130,6 +132,25 @@ public class HistoryList extends ListActivity {
     }
 	
 
+	
+	
+	
+	
+    class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
+
+        //@Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        	TextView tv = (TextView) view;
+        	String str = cursor.getString(1)+" (" + cursor.getString(2) + ", " +
+        		cursor.getString(3) + ", " + cursor.getString(4) + ")";
+        	tv.setText(str);
+
+            return true;
+        }
+    }	
+	
+	
+	
 	
 	
 
