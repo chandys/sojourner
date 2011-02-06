@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Menu;
@@ -35,8 +34,10 @@ public class Main extends Activity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         settings.edit().putString("MyLat", "0");
         settings.edit().putString("MyLong", "0");
+        settings.edit().putString("MyAtt", "0");
         settings.edit().putString("WayLat", "1");
         settings.edit().putString("WayLong", "1");
+        settings.edit().putString("WayAtt", "1");
         
         
         
@@ -129,7 +130,6 @@ public class Main extends Activity {
         	Intent i = new Intent();
         	i.setClass(getApplicationContext(), com.saviorsoft.HistoryList.class);
         	startActivity(i);
-        	//setContentView(R.layout.lunar_layoutcompassview);
         }
     };
 
@@ -141,7 +141,6 @@ public class Main extends Activity {
         	Intent i = new Intent();
         	i.setClass(getApplicationContext(), com.saviorsoft.GpsLocation.class);
         	startActivity(i);
-        	//setContentView(R.layout.lunar_layout);
         }
     };
 

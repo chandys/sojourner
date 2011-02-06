@@ -36,11 +36,13 @@ import android.util.Log;
  */
 public class HistoryDbAdapter {
 
-    public static final String KEY_TITLE = "title";
-    public static final String KEY_BODY = "body";
     public static final String KEY_ROWID = "_id";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_LAT = "lat";
+    public static final String KEY_LONG = "long";
+    public static final String KEY_ATT = "att";
 
-    private static final String TAG = "NotesDbAdapter";
+    private static final String TAG = "WaypointDbAdapter";
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
 
@@ -48,12 +50,12 @@ public class HistoryDbAdapter {
      * Database creation sql statement
      */
     private static final String DATABASE_CREATE =
-        "create table notes (_id integer primary key autoincrement, "
-        + "title text not null, body text not null);";
+        "create table waypoints (_id integer primary key autoincrement, "
+        + "title text not null, lat text not null, long text not null, att text not null);";
 
-    private static final String DATABASE_NAME = "data";
-    private static final String DATABASE_TABLE = "notes";
-    private static final int DATABASE_VERSION = 2;
+    private static final String DATABASE_NAME = "sojourner";
+    private static final String DATABASE_TABLE = "waypoints";
+    private static final int DATABASE_VERSION = 1;
 
     private final Context mCtx;
 
@@ -73,7 +75,7 @@ public class HistoryDbAdapter {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS notes");
+            db.execSQL("DROP TABLE IF EXISTS waypoints");
             onCreate(db);
         }
     }
@@ -117,10 +119,13 @@ public class HistoryDbAdapter {
      * @param body the body of the note
      * @return rowId or -1 if failed
      */
-    public long createNote(String title, String body) {
+    public long createWaypoint( String title, 
+    		String latitude, String longitude, String attitude) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_TITLE, title);
-        initialValues.put(KEY_BODY, body);
+        initialValues.put(KEY_LAT, latitude);
+        initialValues.put(KEY_LONG, longitude);
+        initialValues.put(KEY_ATT, attitude);
 
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
@@ -141,10 +146,10 @@ public class HistoryDbAdapter {
      * 
      * @return Cursor over all notes
      */
-    public Cursor fetchAllNotes() {
+    public Cursor fetchAllPoints() {
 
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_TITLE,
-                KEY_BODY}, null, null, null, null, null);
+                KEY_LAT, KEY_LONG, KEY_ATT}, null, null, null, null, null);
     }
 
     /**
@@ -154,12 +159,12 @@ public class HistoryDbAdapter {
      * @return Cursor positioned to matching note, if found
      * @throws SQLException if note could not be found/retrieved
      */
-    public Cursor fetchNote(long rowId) throws SQLException {
+    public Cursor fetchPoint(long rowId) throws SQLException {
 
         Cursor mCursor =
 
             mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                    KEY_TITLE, KEY_BODY}, KEY_ROWID + "=" + rowId, null,
+                    KEY_TITLE, KEY_LAT, KEY_LONG, KEY_ATT}, KEY_ROWID + "=" + rowId, null,
                     null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -178,10 +183,13 @@ public class HistoryDbAdapter {
      * @param body value to set note body to
      * @return true if the note was successfully updated, false otherwise
      */
-    public boolean updateNote(long rowId, String title, String body) {
+    public boolean updatePoint(long rowId, String title, 
+    		String latitude, String longitude, String attitude) {
         ContentValues args = new ContentValues();
         args.put(KEY_TITLE, title);
-        args.put(KEY_BODY, body);
+        args.put(KEY_LAT, latitude);
+        args.put(KEY_LONG, longitude);
+        args.put(KEY_ATT, attitude);
 
         return mDb.update(DATABASE_TABLE, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
