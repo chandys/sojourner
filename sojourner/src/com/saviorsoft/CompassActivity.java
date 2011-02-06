@@ -31,20 +31,9 @@ public class CompassActivity extends Activity implements SensorEventListener {
         
         setContentView(R.layout.compassview);
         
-   
-//        txtRawData = (TextView) findViewById(R.id.txt_info);
-//        txtDirection = (TextView) findViewById(R.id.txt_direction);
-//        txtRawData.setText("Compass");
-//        txtDirection.setText("");
-        
-        
-        
         // get handles to the LunarView from XML, and its LunarThread
         mCompassView = (CompassView) findViewById(R.id.compsurface);
         //mCompassThread = mCompassView.getThread();
-
-        // give the LunarView a handle to the TextView used for messages
-//        mCompassView.setTextView((TextView) findViewById(R.id.text));
 
         if (savedInstanceState == null) {
             // we were just launched: set up a new game
@@ -58,36 +47,33 @@ public class CompassActivity extends Activity implements SensorEventListener {
 
         // Real sensor manager
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);        
-        
-        
     }
+
     
     /** Register for the updates when Activity is in foreground */
     @Override
     protected void onResume() {
       super.onResume();
-//      mCompassThread.unpause();
       sensorManager.registerListener(this, 
             sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
             SensorManager.SENSOR_DELAY_NORMAL);
     }
+
     
     /** Stop the updates when Activity is paused */
     @Override
     protected void onPause() {
       super.onPause();
-//      mCompassThread.pause();
       sensorManager.unregisterListener(this);
+      finish();
     }
     
 
    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-      //
-      
+
    }
 
    public void onSensorChanged(SensorEvent event) {
-
            myAzimuth = Math.round(event.values[0]);
            myPitch = Math.round(event.values[1]);
            myRoll = Math.round(event.values[2]);
@@ -98,6 +84,5 @@ public class CompassActivity extends Activity implements SensorEventListener {
            
            mCompassView.mWayPointAngle = 228;
    }
-   
-
 }
+
