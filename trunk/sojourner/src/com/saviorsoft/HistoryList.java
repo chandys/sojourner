@@ -3,8 +3,10 @@ package com.saviorsoft;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +22,7 @@ import android.widget.Toast;
 public class HistoryList extends ListActivity {
 
 	private static final int INSERT_ID = Menu.FIRST;
-	private long mNoteNumber = 1;
+	private static long mNoteNumber = 1;
 	private HistoryDbAdapter mDbHelper;
 	
 	@Override
@@ -104,7 +106,7 @@ public class HistoryList extends ListActivity {
 
 	private void createPoint() {
 		SharedPreferences settings = getSharedPreferences(Main.PREFS_NAME, 0);
-        String pointName = "Note " + mNoteNumber++;
+        String pointName = "Waypoint_" + mNoteNumber++;
         mDbHelper.createWaypoint(pointName, settings.getString("MyLat", "0"), 
         		settings.getString("MyLong", "0"), settings.getString("MyAtt", "0"));
         fillData();
@@ -117,18 +119,23 @@ public class HistoryList extends ListActivity {
 	@Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-          Toast msg = Toast.makeText(this, "Got Click", Toast.LENGTH_SHORT);
+       
+        Cursor c = mDbHelper.fetchPoint(id);
+        
+		SharedPreferences settings = getSharedPreferences(
+				Main.PREFS_NAME, Context.MODE_WORLD_WRITEABLE);
+		Editor ed = settings.edit();
+		
+		ed.putString("WayLat", c.getString(c.getColumnIndexOrThrow(HistoryDbAdapter.KEY_LAT)));
+		ed.putString("WayLong", c.getString(c.getColumnIndexOrThrow(HistoryDbAdapter.KEY_LONG)));
+		ed.putString("WayAtt", c.getString(c.getColumnIndexOrThrow(HistoryDbAdapter.KEY_ATT)));
+		ed.commit();
+          
+        
+        
+        Toast msg = Toast.makeText(this, "Set as Waypoint", Toast.LENGTH_SHORT);
           //msg.setGravity(Gravity.CENTER, msg.getXOffset() / 2, msg.getYOffset() / 2);
           msg.show();
-//        Cursor c = mNotesCursor;
-//        c.moveToPosition(position);
-//        Intent i = new Intent(this, NoteEdit.class);
-//        i.putExtra(NotesDbAdapter.KEY_ROWID, id);
-//        i.putExtra(NotesDbAdapter.KEY_TITLE, c.getString(
-//                c.getColumnIndexOrThrow(NotesDbAdapter.KEY_TITLE)));
-//        i.putExtra(NotesDbAdapter.KEY_BODY, c.getString(
-//                c.getColumnIndexOrThrow(NotesDbAdapter.KEY_BODY)));
-//        startActivityForResult(i, ACTIVITY_EDIT);
     }
 	
 
