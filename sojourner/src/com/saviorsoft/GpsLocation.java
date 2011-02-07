@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -77,10 +78,13 @@ public class GpsLocation extends Activity {
 	
 		@Override
 		public void onLocationChanged(Location loc){
-			SharedPreferences settings = getSharedPreferences(Main.PREFS_NAME, 0);
-			settings.edit().putString("MyLat", String.valueOf(loc.getLatitude()));
-			settings.edit().putString("MyLong", String.valueOf(loc.getLongitude()));
-			settings.edit().putString("MyAtt", String.valueOf(loc.getAltitude()));
+			SharedPreferences settings = getSharedPreferences(
+					Main.PREFS_NAME, Context.MODE_WORLD_WRITEABLE);
+			Editor ed = settings.edit();
+			ed.putString("MyLat", String.valueOf(loc.getLatitude()));
+			ed.putString("MyLong", String.valueOf(loc.getLongitude()));
+			ed.putString("MyAtt", String.valueOf(loc.getAltitude()));
+			ed.commit();
 			String Text = "My current location is: " +	"Latitude = " + loc.getLatitude() 
 				+ "  Longitude = " + loc.getLongitude();
 			//loc.getTime();

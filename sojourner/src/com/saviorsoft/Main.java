@@ -5,8 +5,10 @@ package com.saviorsoft;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Menu;
@@ -32,7 +34,7 @@ public class Main extends Activity {
         setContentView(R.layout.main);
         
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        settings.edit().putString("MyLat", "0");
+        settings.edit().putString("MyLat", "95");
         settings.edit().putString("MyLong", "0");
         settings.edit().putString("MyAtt", "0");
         settings.edit().putString("WayLat", "1");
@@ -97,6 +99,9 @@ public class Main extends Activity {
         	startActivity(i);
             return true;
         case R.id.itemsettings:
+    		//LocationManager mLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+    		//mLocManager.
+
         	Dialog dialog = new Dialog(this);
         	dialog.setContentView(R.layout.about);
         	dialog.setTitle(Html.fromHtml("<big>Sojourner</big><sup><small>TM </small> </sup>  <small> by</small> <a href=\"http://code.google.com/p/sojourner\"><cite><big>Savior</big></cite><sub><small>Soft</small></sub></a>"));
