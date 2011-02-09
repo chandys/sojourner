@@ -2,6 +2,7 @@ package com.saviorsoft;
 
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,11 +10,13 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -105,11 +108,37 @@ public class HistoryList extends ListActivity {
 	}
 
 	private void createPoint() {
-		SharedPreferences settings = getSharedPreferences(Main.PREFS_NAME, 0);
-        String pointName = "Waypoint_" + mNoteNumber++;
-        mDbHelper.createWaypoint(pointName, settings.getString("MyLat", "0"), 
-        		settings.getString("MyLong", "0"), settings.getString("MyAtt", "0"));
-        fillData();
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);  
+		  
+		alert.setTitle("Waypoint Name");  
+		alert.setMessage("Please provide a name for the waypoint");  
+		  
+		// Set an EditText view to get user input   
+		final EditText input = new EditText(this);  
+		alert.setView(input);  
+		  
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {  
+		public void onClick(DialogInterface dialog, int whichButton) {  
+		  Editable value = input.getText();  
+		  // Do something with value!
+		  SharedPreferences settings = getSharedPreferences(Main.PREFS_NAME, 0);
+		  String pointName = "Waypoint_" + mNoteNumber++;
+		  if(value.length() > 0)
+			  pointName = value.toString();
+	      mDbHelper.createWaypoint(pointName, settings.getString("MyLat", "0"), 
+	        		settings.getString("MyLong", "0"), settings.getString("MyAtt", "0"));
+	      fillData();		  }  
+		});  
+		  
+		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {  
+		  public void onClick(DialogInterface dialog, int whichButton) {  
+		    // Canceled.  
+		  }  
+		});  
+		  
+		alert.show(); ;
+		
+
 	}
 
 	
@@ -148,8 +177,8 @@ public class HistoryList extends ListActivity {
         //@Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         	TextView tv = (TextView) view;
-        	String str = cursor.getString(1)+" (" + cursor.getString(2) + ", " +
-        		cursor.getString(3) + ", " + cursor.getString(4) + ")";
+        	String str = cursor.getString(1)+"\nLatitude: " + cursor.getString(2) + "\nLongitude: " +
+        		cursor.getString(3) + "\nAttitude: " + cursor.getString(4);
         	tv.setText(str);
 
             return true;
