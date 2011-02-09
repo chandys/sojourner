@@ -51,7 +51,7 @@ public class GpsLocation extends Activity {
     		mLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
     		mLocListener = new MyLocationListener();
     		mLocManager.requestLocationUpdates( 
-    				LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
+    				LocationManager.GPS_PROVIDER, 0, 10, mLocListener);
         	
         	Toast.makeText( getApplicationContext(), "Getting Gps Location ...", 
         			Toast.LENGTH_SHORT ).show();
@@ -85,11 +85,8 @@ public class GpsLocation extends Activity {
 			ed.putString("MyLong", String.valueOf(loc.getLongitude()));
 			ed.putString("MyAtt", String.valueOf(loc.getAltitude()));
 			ed.commit();
-			String Text = "My current location is: " +	"Latitude = " + loc.getLatitude() 
-				+ "  Longitude = " + loc.getLongitude();
-			//loc.getTime();
-			//loc.bearingTo(dest);
-			//loc.distanceTo(dest);
+			String Text = "My current location is:" +	"\nLatitude = " + loc.getLatitude() 
+				+ "\nLongitude = " + loc.getLongitude();
 			Toast.makeText( getApplicationContext(), Text, Toast.LENGTH_SHORT).show();
 			TextView t = (TextView) findViewById(R.id.textViewGPS);
 			t.setText(Text);

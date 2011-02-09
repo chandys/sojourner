@@ -26,25 +26,29 @@ public final class R {
         public static final int stork320x480=0x7f02000c;
     }
     public static final class id {
-        public static final int ButtonCurrent=0x7f06000f;
-        public static final int ButtonHistory=0x7f06000e;
-        public static final int ButtonNew=0x7f06000d;
+        public static final int ButtonCurrent=0x7f060013;
+        public static final int ButtonHistory=0x7f060012;
+        public static final int ButtonNew=0x7f060011;
         public static final int ImageView01=0x7f06000a;
         public static final int LinearLayout01=0x7f060009;
-        public static final int TextView01=0x7f06000c;
+        public static final int TextView01=0x7f060010;
         public static final int aboutimage=0x7f060001;
         public static final int aboutlayout=0x7f060000;
         public static final int abouttext=0x7f060002;
+        public static final int butCancel=0x7f06000f;
+        public static final int butOk=0x7f06000e;
         public static final int buttonGetLoc=0x7f060007;
         public static final int buttonSaveLoc=0x7f060008;
         public static final int compsurface=0x7f060005;
-        public static final int itemcompass=0x7f060012;
-        public static final int itemexit=0x7f060014;
-        public static final int itemsettings=0x7f060013;
-        public static final int maplinearlayout=0x7f060010;
-        public static final int mapview=0x7f060011;
+        public static final int itemcompass=0x7f060016;
+        public static final int itemexit=0x7f060018;
+        public static final int itemsettings=0x7f060017;
+        public static final int linearLayout1=0x7f06000d;
+        public static final int maplinearlayout=0x7f060014;
+        public static final int mapview=0x7f060015;
         public static final int text1=0x7f06000b;
         public static final int textViewGPS=0x7f060006;
+        public static final int textViewInputDialog=0x7f06000c;
         public static final int txt_direction=0x7f060003;
         public static final int txt_info=0x7f060004;
     }
@@ -54,8 +58,9 @@ public final class R {
         public static final int gpslocation=0x7f030002;
         public static final int history_row=0x7f030003;
         public static final int historylayout=0x7f030004;
-        public static final int main=0x7f030005;
-        public static final int maplayout=0x7f030006;
+        public static final int input_dialog=0x7f030005;
+        public static final int main=0x7f030006;
+        public static final int maplayout=0x7f030007;
     }
     public static final class menu {
         public static final int mainmenu=0x7f050000;
