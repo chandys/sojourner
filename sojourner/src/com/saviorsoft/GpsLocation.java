@@ -21,13 +21,17 @@ public class GpsLocation extends Activity {
 	private LocationManager mLocManager;
 	private LocationListener mLocListener;
 	private Bundle mBundle;
-	
+	//private MyAppContext mContext;
+
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.gpslocation);
 	
+		
+		
+		PrintStats();
 		
 		/* Use the LocationManager class to obtain GPS locations */
 		//mLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -41,6 +45,20 @@ public class GpsLocation extends Activity {
 
 	}	
 
+	
+	private void PrintStats(){
+		MyAppContext mContext = ((MyAppContext) getApplicationContext());
+		String str = "My current location is:" +	"\nLatitude = " +
+		mContext.mCurrLocation.getLatitude() + "\nLongitude = " + 
+		mContext.mCurrLocation.getLongitude() +	
+		"\nMy Waypoint location is:" +	"\nLatitude = " + 
+		mContext.mWayLocation.getLatitude()	+ "\nLongitude = " + 
+		mContext.mWayLocation.getLongitude();
+		TextView t = (TextView) findViewById(R.id.textViewGPS);
+		t.setText(str);			
+	}
+
+	
 	
     /**
      * A call-back for when the user presses the current track button.
@@ -65,7 +83,6 @@ public class GpsLocation extends Activity {
     OnClickListener SaveLocListener = new OnClickListener() {
         public void onClick(View v) {
         	
-        	
         	Toast.makeText( getApplicationContext(), "Save Gps Location", 
         			Toast.LENGTH_SHORT ).show();
         }
@@ -78,6 +95,14 @@ public class GpsLocation extends Activity {
 	
 		@Override
 		public void onLocationChanged(Location loc){
+			//save to application context
+			MyAppContext mContext = ((MyAppContext) getApplicationContext());
+			mContext.mCurrLocation.setLatitude(loc.getLatitude());
+			mContext.mCurrLocation.setLongitude(loc.getLongitude());
+			mContext.mCurrLocation.setAltitude(loc.getAccuracy());
+
+			
+			//save to persistance storage
 			SharedPreferences settings = getSharedPreferences(
 					Main.PREFS_NAME, Context.MODE_WORLD_WRITEABLE);
 			Editor ed = settings.edit();
@@ -85,17 +110,17 @@ public class GpsLocation extends Activity {
 			ed.putString("MyLong", String.valueOf(loc.getLongitude()));
 			ed.putString("MyAtt", String.valueOf(loc.getAltitude()));
 			ed.commit();
-			String Text = "My current location is:" +	"\nLatitude = " + loc.getLatitude() 
-				+ "\nLongitude = " + loc.getLongitude();
-			Toast.makeText( getApplicationContext(), Text, Toast.LENGTH_SHORT).show();
-			TextView t = (TextView) findViewById(R.id.textViewGPS);
-			t.setText(Text);
+
+			PrintStats();
 			
+			String Text = "My current location is:" +	"\nLatitude = " + loc.getLatitude() 
+			+ "\nLongitude = " + loc.getLongitude();
+			Toast.makeText( getApplicationContext(), Text, Toast.LENGTH_SHORT).show();
 			//unregister
 			mLocManager.removeUpdates(mLocListener);
 		}
 		
-		
+				
 		@Override	
 		public void onProviderDisabled(String provider){
 			Toast.makeText( getApplicationContext(), "Gps Disabled", Toast.LENGTH_SHORT ).show();

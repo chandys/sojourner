@@ -160,7 +160,15 @@ public class HistoryList extends ListActivity {
 		ed.putString("WayAtt", c.getString(c.getColumnIndexOrThrow(HistoryDbAdapter.KEY_ATT)));
 		ed.commit();
           
-        
+		//save to application context
+		MyAppContext mContext = (MyAppContext) getApplicationContext();
+		mContext.mWayLocation.setLatitude(
+				c.getDouble(c.getColumnIndexOrThrow(HistoryDbAdapter.KEY_LAT)));
+		mContext.mWayLocation.setLongitude(
+				c.getDouble(c.getColumnIndexOrThrow(HistoryDbAdapter.KEY_LONG)));
+		mContext.mWayLocation.setAltitude(
+				c.getDouble(c.getColumnIndexOrThrow(HistoryDbAdapter.KEY_ATT)));
+		mContext.reCalcWaypoint();
         
         Toast msg = Toast.makeText(this, "Set as Waypoint", Toast.LENGTH_SHORT);
           //msg.setGravity(Gravity.CENTER, msg.getXOffset() / 2, msg.getYOffset() / 2);
