@@ -32,9 +32,8 @@ public class CompassActivity extends Activity implements SensorEventListener {
         
         // get handles to the LunarView from XML, and its LunarThread
         mCompassView = (CompassView) findViewById(R.id.compsurface);
-        //mCompassThread = mCompassView.getThread();
         
-        calcWaypoint();
+        ((MyAppContext) getApplicationContext()).reCalcWaypoint();
         
 
         
@@ -88,29 +87,5 @@ public class CompassActivity extends Activity implements SensorEventListener {
            mCompassView.mWayPointAngle = 228;
    }
    
-   private void calcWaypoint()
-   {
-		SharedPreferences settings = getSharedPreferences(Main.PREFS_NAME, MODE_PRIVATE);
-
-        Location curr = new Location("Blank");
-        Location waypoint = new Location("Blank");
-        curr.setLatitude(Double.parseDouble(settings.getString("MyLat", "0")));
-        curr.setLongitude(Double.parseDouble(settings.getString("MyLong", "0")));
-        curr.setAltitude(Double.parseDouble(settings.getString("MyAtt", "0")));
-        
-        waypoint.setLatitude(Double.parseDouble(settings.getString("WayLat", "0")));
-        waypoint.setLongitude(Double.parseDouble(settings.getString("WayLong", "0")));
-        waypoint.setAltitude(Double.parseDouble(settings.getString("WayAtt", "0")));
-        
-        float bearings = curr.bearingTo(waypoint);
-        float meters = curr.distanceTo(waypoint);
-        
-        mCompassView.mWayPointAngle = bearings;
-        mCompassView.mWayPointDistance = (float) (meters / 0.3048);
-        
-        
-        
-	   
-   }
 }
 

@@ -34,6 +34,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         private Bitmap mCompBackground;
         private RectF mWaypointBoxRect;
         private Paint mWaypointBoxPaint;
+        private MyAppContext mAppContext;
 
         
 
@@ -60,6 +61,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             mSurfaceHolder = surfaceHolder;
             mHandler = handler;
             mContext = context;
+            mAppContext = (MyAppContext) context.getApplicationContext();
 
             Resources res = context.getResources();
             mBackgroundImage = BitmapFactory.decodeResource(res,
@@ -168,7 +170,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             float cy = height/2 + 46;
 
             //draw waypoint 
-            float transpoint = mAzimuth-mWayPointAngle;
+            float transpoint = mAzimuth-mAppContext.mWaypointAngle;
             int rad = (mRoseImage.getWidth()/2) + 10;
             float x2 = (float) (cx - ((rad+15) * Math.sin(Math.toRadians(transpoint))));
             float y2 = (float) (cy - ((rad+15) * Math.cos(Math.toRadians(transpoint))));
@@ -226,10 +228,10 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
 	      //waypoint text stats
 	      mCanvas.drawText("Waypoint", mWaypointBoxRect.left+10, 
 	    		  mWaypointBoxRect.top+27, mTextPaintLargeBold);
-	      mTextString = String.format("Direction:    %.2f", mWayPointAngle);
+	      mTextString = String.format("Direction:    %.2f", mAppContext.mWaypointAngle);
 	      mCanvas.drawText(mTextString, mWaypointBoxRect.left+10, 
 	    		  mWaypointBoxRect.top+47, mTextPaintSmall);
-	      mTextString = String.format("Distance:    %.2f ft.", mWayPointDistance);
+	      mTextString = String.format("Distance:    %.2f ft.", mAppContext.mWaypointDistance);
 	      mCanvas.drawText(mTextString, mWaypointBoxRect.left+10, 
 	    		  mWaypointBoxRect.top+59, mTextPaintSmall);
 	   }
