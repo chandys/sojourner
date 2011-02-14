@@ -26,12 +26,12 @@ public final class R {
         public static final int stork320x480=0x7f02000c;
     }
     public static final class id {
-        public static final int ButtonCurrent=0x7f060013;
-        public static final int ButtonHistory=0x7f060012;
-        public static final int ButtonNew=0x7f060011;
+        public static final int ButtonCurrent=0x7f060017;
+        public static final int ButtonHistory=0x7f060016;
+        public static final int ButtonNew=0x7f060015;
+        public static final int ImageButton01=0x7f060013;
         public static final int ImageView01=0x7f06000a;
         public static final int LinearLayout01=0x7f060009;
-        public static final int TextView01=0x7f060010;
         public static final int aboutimage=0x7f060001;
         public static final int aboutlayout=0x7f060000;
         public static final int abouttext=0x7f060002;
@@ -40,12 +40,17 @@ public final class R {
         public static final int buttonGetLoc=0x7f060007;
         public static final int buttonSaveLoc=0x7f060008;
         public static final int compsurface=0x7f060005;
-        public static final int itemcompass=0x7f060016;
-        public static final int itemexit=0x7f060018;
-        public static final int itemsettings=0x7f060017;
+        public static final int itemcompass=0x7f06001b;
+        public static final int itemexit=0x7f06001d;
+        public static final int itemsettings=0x7f06001c;
         public static final int linearLayout1=0x7f06000d;
-        public static final int maplinearlayout=0x7f060014;
-        public static final int mapview=0x7f060015;
+        public static final int mainwintext=0x7f060018;
+        public static final int maplinearlayout=0x7f060019;
+        public static final int mapview=0x7f06001a;
+        public static final int myimage1=0x7f060011;
+        public static final int mytext1=0x7f060012;
+        public static final int relativeLayout1=0x7f060010;
+        public static final int relativeLayout2=0x7f060014;
         public static final int text1=0x7f06000b;
         public static final int textViewGPS=0x7f060006;
         public static final int textViewInputDialog=0x7f06000c;
