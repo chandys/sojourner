@@ -7,7 +7,7 @@
         <ImageButton android:layout_alignParentRight="true" android:id="@+id/ImageButton01" android:src="@android:drawable/ic_menu_compass" android:layout_height="40px" android:layout_width="40px" android:layout_marginTop="10px" android:layout_marginRight="10px"></ImageButton>
     </RelativeLayout>
     <RelativeLayout android:id="@+id/relativeLayout2" android:layout_height="wrap_content" android:layout_width="fill_parent" android:background="#808080" android:paddingTop="2dip">
-        <Button android:id="@+id/ButtonNew" android:text="New Track" android:height="5dip" android:layout_height="wrap_content" android:layout_width="wrap_content" android:width="110dip"></Button>
+        <Button android:id="@+id/ButtonNew" android:text="New Track" android:height="5dip" android:layout_height="wrap_content" android:layout_width="wrap_content" android:width="110dip" android:bufferType="normal" android:scrollbarAlwaysDrawHorizontalTrack="false"></Button>
         <Button android:id="@+id/ButtonHistory" android:text="History" android:layout_height="wrap_content" android:layout_toRightOf="@+id/ButtonNew" android:width="100dip" android:layout_width="wrap_content"></Button>
         <Button android:id="@+id/ButtonCurrent" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_toRightOf="@+id/ButtonHistory" android:text="My Location" android:width="120dip"></Button>
     </RelativeLayout>

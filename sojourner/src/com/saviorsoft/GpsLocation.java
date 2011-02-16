@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.location.Criteria;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -31,7 +32,7 @@ public class GpsLocation extends Activity {
 	
 		
 		
-		PrintStats();
+		drawText();
 		
 		/* Use the LocationManager class to obtain GPS locations */
 		//mLocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -45,18 +46,28 @@ public class GpsLocation extends Activity {
 
 	}	
 
+    private void drawText(){
+    	MyAppContext mContext = ((MyAppContext) getApplicationContext());
+    	String str = mContext.locationToString();
+    	str += MyAppContext.newline + MyAppContext.newline;
+    	mContext.reCalcWaypoint();
+    	str += mContext.bearingsToString();
+    	TextView t = (TextView) findViewById(R.id.textViewGPS);
+		t.setText(str);
+    }
+    
 	
-	private void PrintStats(){
-		MyAppContext mContext = ((MyAppContext) getApplicationContext());
-		String str = "My current location is:" +	"\nLatitude = " +
-		mContext.mCurrLocation.getLatitude() + "\nLongitude = " + 
-		mContext.mCurrLocation.getLongitude() +	
-		"\nMy Waypoint location is:" +	"\nLatitude = " + 
-		mContext.mWayLocation.getLatitude()	+ "\nLongitude = " + 
-		mContext.mWayLocation.getLongitude();
-		TextView t = (TextView) findViewById(R.id.textViewGPS);
-		t.setText(str);			
-	}
+//	private void PrintStats(){
+//		MyAppContext mContext = ((MyAppContext) getApplicationContext());
+//		String str = "My current location is:" +	"\nLatitude = " +
+//		mContext.mCurrLocation.getLatitude() + "\nLongitude = " + 
+//		mContext.mCurrLocation.getLongitude() +	
+//		"\nMy Waypoint location is:" +	"\nLatitude = " + 
+//		mContext.mWayLocation.getLatitude()	+ "\nLongitude = " + 
+//		mContext.mWayLocation.getLongitude();
+//		TextView t = (TextView) findViewById(R.id.textViewGPS);
+//		t.setText(str);			
+//	}
 
 	
 	
@@ -71,6 +82,15 @@ public class GpsLocation extends Activity {
     		mLocManager.requestLocationUpdates( 
     				LocationManager.GPS_PROVIDER, 0, 10, mLocListener);
         	
+    		final Criteria criteria = new Criteria();
+
+    		criteria.setAccuracy(Criteria.ACCURACY_FINE);
+    		criteria.setAltitudeRequired(false);
+    		criteria.setBearingRequired(false);
+    		criteria.setCostAllowed(true);
+    		criteria.setPowerRequirement(Criteria.POWER_LOW);
+    		
+    		
         	Toast.makeText( getApplicationContext(), "Getting Gps Location ...", 
         			Toast.LENGTH_SHORT ).show();
         }
@@ -111,7 +131,7 @@ public class GpsLocation extends Activity {
 			ed.putString("MyAtt", String.valueOf(loc.getAltitude()));
 			ed.commit();
 
-			PrintStats();
+			drawText();
 			
 			String Text = "My current location is:" +	"\nLatitude = " + loc.getLatitude() 
 			+ "\nLongitude = " + loc.getLongitude();

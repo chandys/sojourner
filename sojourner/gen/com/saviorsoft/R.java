@@ -42,6 +42,7 @@ public final class R {
         public static final int compsurface=0x7f060005;
         public static final int itemcompass=0x7f06001b;
         public static final int itemexit=0x7f06001d;
+        public static final int itemrefresh=0x7f06001e;
         public static final int itemsettings=0x7f06001c;
         public static final int linearLayout1=0x7f06000d;
         public static final int mainwintext=0x7f060018;

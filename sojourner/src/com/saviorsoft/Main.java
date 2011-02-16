@@ -17,10 +17,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class Main extends Activity {
 	
 	public static final String PREFS_NAME = "SojounerPrefsFile";
+	public static String newline = System.getProperty("line.separator");
 
 	
     
@@ -47,8 +49,19 @@ public class Main extends Activity {
         ((Button) findViewById(R.id.ButtonNew)).setOnClickListener(mNewTrackListener);
         ((Button) findViewById(R.id.ButtonHistory)).setOnClickListener(mHistoryListener);
         ((Button) findViewById(R.id.ButtonCurrent)).setOnClickListener(mCurrentLocationListener);
+        
+        drawText();
     }
     
+    private void drawText(){
+    	MyAppContext mContext = ((MyAppContext) getApplicationContext());
+    	String str = mContext.locationToString();
+    	str += newline + newline;
+    	mContext.reCalcWaypoint();
+    	str += mContext.bearingsToString();
+    	TextView t = (TextView) findViewById(R.id.mainwintext);
+		t.setText(str);
+    }
     
     /**
      * Called when the activity is about to start interacting with the user.
@@ -109,6 +122,9 @@ public class Main extends Activity {
         	return true;
         case R.id.itemexit:
             finish();
+            return true;
+        case R.id.itemrefresh:
+            drawText();
             return true;
         }
 
