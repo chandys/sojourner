@@ -45,41 +45,6 @@ public class MyAppContext extends android.app.Application {
     }
     
     
-    /**
-     * Convenient accessor, saves having to call and cast getApplicationContext() 
-     */
-    //public static MyAppContext getInstance() {
-    //    checkInstance();
-    //    return instance;
-    //}
-
-    /**
-     * Accessor for some resource that depends on a context
-     */
-    //public static Location getCurrLocation() {
-    //    if (mCurrLocation == null) {
-    //        checkInstance();
-    //        mCurrLocation = new Location(LOG_TAG);
-    //   }
-    //    return mCurrLocation;
-    //}
-
-    /**
-     * Accessor for another resource that depends on a context
-     */
-    //public static Location getWayLocation() {
-    //    if (mWayLocation == null) {
-    //        checkInstance();
-    //        mWayLocation = new Location(LOG_TAG);
-    //    }
-    //    return mWayLocation;
-    //}
-
-    //private static void checkInstance() {
-    //    if (instance == null)
-    //        throw new IllegalStateException("Application not created yet!");
-    //}
-
     @Override
     public void onCreate() {
         super.onCreate();

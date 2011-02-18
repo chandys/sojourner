@@ -41,7 +41,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
         private Bitmap mBackgroundImage;
         private Bitmap mRoseImage;
         private Bitmap mTicsImage;
-        private Handler mHandler;
+        @SuppressWarnings("unused")
+		private Handler mHandler;
         private boolean mRun = false;
         private SurfaceHolder mSurfaceHolder;
         private int mCanvasHeight = 1;
@@ -172,7 +173,7 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             //draw waypoint 
             float transpoint = mAppContext.mWaypointAngle - mAzimuth;
             int rad = (mRoseImage.getWidth()/2) + 10;
-            float x2 = (float) (cx - ((rad+15) * Math.sin(Math.toRadians(transpoint))));
+            float x2 = (float) (cx + ((rad+15) * Math.sin(Math.toRadians(transpoint))));
             float y2 = (float) (cy - ((rad+15) * Math.cos(Math.toRadians(transpoint))));
             canvas.drawCircle(x2, y2, 5, mMagentaPaint);
 
@@ -180,16 +181,8 @@ class CompassView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.save();
             canvas.rotate(-mAzimuth,cx, cy);
             canvas.drawText("^", cx-8, cy-rad+40, mDirectionBoxPaint);
-            
-            //draw waypoint
-            //canvas.drawCircle(x2, y2, 5, mMagentaPaint);
-            
-//            float rx = cx - (mRoseImage.getWidth()/2);
-//            float ry = cy - (mRoseImage.getHeight()/2);
-//            canvas.drawBitmap(mRoseImage, rx, ry, null);
             canvas.restore();
-            
-            
+                        
             mCanvas = canvas;
             printDirection();
             

@@ -5,10 +5,8 @@ package com.saviorsoft;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Menu;
@@ -17,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class Main extends Activity {
@@ -49,6 +48,7 @@ public class Main extends Activity {
         ((Button) findViewById(R.id.ButtonNew)).setOnClickListener(mNewTrackListener);
         ((Button) findViewById(R.id.ButtonHistory)).setOnClickListener(mHistoryListener);
         ((Button) findViewById(R.id.ButtonCurrent)).setOnClickListener(mCurrentLocationListener);
+        ((ImageButton) findViewById(R.id.ImageButtonCompass)).setOnClickListener(mCompassListener);
         
         drawText();
     }
@@ -68,6 +68,7 @@ public class Main extends Activity {
      */
     @Override
     protected void onResume() {
+    	drawText();
         super.onResume();
     }
 
@@ -166,6 +167,13 @@ public class Main extends Activity {
     };
 
     
+   OnClickListener mCompassListener = new OnClickListener() {
+       public void onClick(View v) {
+       	Intent i = new Intent();
+    	i.setClass(getApplicationContext(), com.saviorsoft.CompassActivity.class);
+    	startActivity(i);
+       }
+   };
     
     
    

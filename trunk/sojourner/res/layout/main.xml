@@ -4,7 +4,7 @@
     <RelativeLayout android:id="@+id/relativeLayout1" android:layout_height="wrap_content" android:layout_width="match_parent" android:background="#808080">
         <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/myimage1" android:src="@drawable/hiker_icon"></ImageView>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold" android:layout_marginBottom="20dip" android:id="@+id/mytext1" android:text="@string/hello" android:layout_toRightOf="@+id/myimage1" android:textSize="24dip" android:layout_marginLeft="10dip" android:layout_marginTop="10dip" android:textColor="#ffffff"></TextView>
-        <ImageButton android:layout_alignParentRight="true" android:id="@+id/ImageButton01" android:src="@android:drawable/ic_menu_compass" android:layout_height="40px" android:layout_width="40px" android:layout_marginTop="10px" android:layout_marginRight="10px"></ImageButton>
+        <ImageButton android:id="@+id/ImageButtonCompass" android:src="@android:drawable/ic_menu_compass" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true"></ImageButton>
     </RelativeLayout>
     <RelativeLayout android:id="@+id/relativeLayout2" android:layout_height="wrap_content" android:layout_width="fill_parent" android:background="#808080" android:paddingTop="2dip">
         <Button android:id="@+id/ButtonNew" android:text="New Track" android:height="5dip" android:layout_height="wrap_content" android:layout_width="wrap_content" android:width="110dip" android:bufferType="normal" android:scrollbarAlwaysDrawHorizontalTrack="false"></Button>
