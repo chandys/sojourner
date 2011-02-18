@@ -5,7 +5,7 @@
     <string name="compass">Compass</string>
     <string name="settings">Settings</string>
     <string name="exit">Exit</string>
-    <string name="no_notes">No Notes Yet</string>
+    <string name="no_notes">No Tracks Yet</string>
     <string name="menu_insert">Add Item</string>
 	<string name="abouttext"><hr />Sojourner is a GPS tracking application. Brought to by SaviorSoft.  This application is still in its early infancy.  Stand by!</string>
     
