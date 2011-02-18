@@ -3,12 +3,7 @@ package com.saviorsoft;
 
 //import com.saviorsoft.CompassView.CompassThread;
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.Bundle;
-//import android.util.Log;
-//import android.widget.TextView;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;

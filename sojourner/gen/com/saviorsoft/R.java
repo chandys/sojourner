@@ -29,7 +29,7 @@ public final class R {
         public static final int ButtonCurrent=0x7f060017;
         public static final int ButtonHistory=0x7f060016;
         public static final int ButtonNew=0x7f060015;
-        public static final int ImageButton01=0x7f060013;
+        public static final int ImageButtonCompass=0x7f060013;
         public static final int ImageView01=0x7f06000a;
         public static final int LinearLayout01=0x7f060009;
         public static final int aboutimage=0x7f060001;

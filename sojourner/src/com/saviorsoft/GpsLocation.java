@@ -2,7 +2,6 @@ package com.saviorsoft;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Criteria;
@@ -21,6 +20,7 @@ public class GpsLocation extends Activity {
 
 	private LocationManager mLocManager;
 	private LocationListener mLocListener;
+	@SuppressWarnings("unused")
 	private Bundle mBundle;
 	//private MyAppContext mContext;
 
